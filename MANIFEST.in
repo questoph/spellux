@@ -1,1 +1,3 @@
 include spellux/data/*
+include LICENCE
+include README.md
