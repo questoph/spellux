@@ -260,6 +260,7 @@ spellux.global_stats(corpus)
 corpus
 ``` 
 Pass the variable that holds your corpus here to compute global correction stats.
+
 **Note:** This works best when correcting multiple texts in a for loop.
 
 ### State of affairs & roadmap
