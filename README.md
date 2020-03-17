@@ -280,6 +280,6 @@ description='Automatic text normalization for Luxembourgish',
 url='https://github.com/questoph/spellux',
 author='Christoph Purschke',
 contact='christoph@purschke.info',
-reference='http://hdl.handle.net/10993/42807'
+reference='http://hdl.handle.net/10993/42807',
 license='MIT'
 ```
