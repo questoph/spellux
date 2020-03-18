@@ -60,6 +60,9 @@ excs = {'Wort':'Wuert'}
 # Note: This can be a string or a list of string tokens
 text = "Eche hun d'Wort heut den Muaren mussen leesen."
 
+# Reset global correction statistics to zero
+spellux.global_stats(text, reset=True)
+
 # Call the function on a new instance
 correct = spellux.normalize_text(text, exceptions=excs, mode='combo', sim_ratio=75, 
           add_matches=True, stats=True, print_unknown=False, nrule=True, indexing=False, 
@@ -72,13 +75,15 @@ print(correct)
 # Save the updated matching dict and a list of unknown words to file
 spellux.update_resources(matchdict=True, unknown=False, reset_matches=False)
 
-# Print global correction statistics
-spellux.global_stats(text)
+# Print global correction statistics after correction
+spellux.global_stats(text, reset=False)
 
 # Use lemmatize method outside the main correction routine
 # Note: this method takes a list of tokes as input, not a string
-lemmas = spellux.lemmatize_text(text, sim_ratio=75)
+tokens = ["Du", "hues", "Quatsch", "mat", "eise", "Sprooche", "gemaach", "."]
+lemmas = spellux.lemmatize_text(tokens, sim_ratio=75)
 print(lemmas)
+["Du", "hunn", "Quatsch", "mat", "eis", "Sprooch", "maachen", "."]
 ```
 
 Note: You can use the Jupyter notebook to test the package.
@@ -251,17 +256,22 @@ Option to reset the matching dictionary. This can be useful if you notice a lot 
 
 ### Arguments of the global_stats() method
 
-The global stats method takes one obligatory argument.
+The global stats method takes one obligatory argument, the corpus to be counted, and one conditional argument, the reset parameter to reset the counters to zero.
 
 ```Python
-spellux.global_stats(corpus)
+spellux.global_stats(corpus, reset=False)
 ```
 ```Python
 corpus
 ``` 
 Pass the variable that holds your corpus here to compute global correction stats.
 
-**Note:** This works best when correcting multiple texts in a for loop.
+```Python
+reset=False/True
+```
+*Default setting: False*
+
+Option to reset global statistics. Use this parameter at the beginning of a correction session/loop to reset the counters.
 
 ### State of affairs & roadmap
 
