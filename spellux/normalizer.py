@@ -114,11 +114,15 @@ def global_stats(corpus, totals=totals, reset=False):
         texts = len(corpus)
     elif isinstance(corpus, str) == True:
         texts = 1
-    print("Correction statistics:\n")
-    print("- Number of texts: {}" .format(str(texts)))
-    print("- Number of words: {}" .format(str(totals["words"])))
-    print("- Corrected items: {}" .format(str(totals["corrections"])))
-    print("- Items not found: {}" .format(str(totals["misses"])))
+    if reset == True:
+        totals["words"], totals["corections"], totals["misses"] = 0, 0, 0
+        print("Global stats have been set to zero!")
+    else:
+        print("Correction statistics:\n")
+        print("- Number of texts: {}" .format(str(texts)))
+        print("- Number of words: {}" .format(str(totals["words"])))
+        print("- Corrected items: {}" .format(str(totals["corrections"])))
+        print("- Items not found: {}" .format(str(totals["misses"])))
 
 # Correction functions for fuzzy string matching
 ## Function to evaluate candiate for correction using word embedding model
