@@ -393,6 +393,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
         elif re.match(r"^[a-zA-Z]([\w'`-])*[a-zA-Z]?$", word) is None:
             # Keep non-alphanumeric words & special characters unchanged
             text_corr.append(word)
+            word_count -=1
         elif word in match_dict:
             # Check word against matching dict
             repl = match_dict[word]
