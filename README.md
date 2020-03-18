@@ -76,7 +76,8 @@ print(correct)
 spellux.update_resources(matchdict=True, unknown=False, reset_matches=False)
 
 # Print global correction statistics after correction
-spellux.global_stats(text, reset=False)
+# The report parameter triggers a print out report
+spellux.global_stats(text, reset=False, report=True)
 
 # Use lemmatize method outside the main correction routine
 # Note: this method takes a list of tokes as input, not a string
@@ -256,10 +257,10 @@ Option to reset the matching dictionary. This can be useful if you notice a lot 
 
 ### Arguments of the global_stats() method
 
-The global stats method takes one obligatory argument, the corpus to be counted, and one conditional argument, the reset parameter to reset the counters to zero.
+The global stats method takes one obligatory argument, the corpus to be counted, and two conditional arguments: the reset parameter to *reset* the counters to zero and the *report* parameter that triggers a print out report of the stats.
 
 ```Python
-spellux.global_stats(corpus, reset=False)
+spellux.global_stats(corpus, reset=False, report=False)
 ```
 ```Python
 corpus
@@ -272,6 +273,13 @@ reset=False/True
 *Default setting: False*
 
 Option to reset global statistics. Use this parameter at the beginning of a correction session/loop to reset the counters.
+
+```Python
+report=False/True
+```
+*Default setting: False*
+
+ If set to *True*, the method returns a print version of the correction statistics. If set to *False*, the method returns a list of tuples.
 
 ### State of affairs & roadmap
 
