@@ -355,6 +355,9 @@ def update_resources(matchdict=True, unknown=False,  reset_matchdict=False):
 ## Set options to streamline workflow
 def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_ratio=75, add_matches=True, stats=True, nrule=True, print_unknown=False, indexing=False, lemmatize=False, tolist=False, progress=False):
     
+    #Set alphabet for string pattern matching
+    alpha = "a-zA-Z-äüöÄÖÜëéËÉ"
+    
     # Define set to collect unknown words
     not_found = set()
     
@@ -390,8 +393,8 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
             # Keep punctuation unchanged
             text_corr.append(word)
             word_count -=1
-        elif re.match(r"^[a-zA-Z]([\w'`-])*[a-zA-Z]?$", word) is None:
-            # Keep non-alphanumeric words & special characters unchanged
+        elif re.match(rf"^[{alpha}]([{alpha}'`-])*[{alpha}]?$", word) is None:
+            # Keep non-alphabetic words & special characters unchanged
             text_corr.append(word)
             word_count -=1
         elif word in match_dict:
