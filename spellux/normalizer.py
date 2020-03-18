@@ -109,7 +109,7 @@ print("\n All set. Let's go!")
 # Function to print global test statistics
 totals = {"words":0, "corrections":0, "misses":0}
 
-def global_stats(corpus, totals=totals, reset=False):
+def global_stats(corpus, totals=totals, reset=False, report=False):
     if isinstance(corpus, list) == True:
         texts = len(corpus)
     elif isinstance(corpus, str) == True:
