@@ -115,7 +115,7 @@ def global_stats(corpus, totals=totals, reset=False):
     elif isinstance(corpus, str) == True:
         texts = 1
     if reset == True:
-        totals["words"], totals["corections"], totals["misses"] = 0, 0, 0
+        totals["words"], totals["corrections"], totals["misses"] = 0, 0, 0
         print("Global stats have been set to zero!")
     else:
         print("Correction statistics:\n")
