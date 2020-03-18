@@ -13,7 +13,7 @@ from collections import Counter
 
 thedir = os.path.dirname(__file__)
 
-def words(text): return re.findall('[a-zA-Z-äüöÄÖÜëéËÉ]+', text.lower())
+def words(text): return re.findall("[a-zA-Z-ëäöüéêèûîâÄÖÜËÉ'`-]+", text)
 
 text_relpath = "data/rtl_news_articles_clean_puretext3.txt"
 text_filepath = os.path.join(thedir, text_relpath)
@@ -37,7 +37,7 @@ def known(words):
 
 def edits1(word):
     #All edits that are one edit away from word.
-    alphabet = 'abcdefghijklmnopqrstuvwxyzëäöüéêèûîâABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜËÉ'
+    alphabet = "abcdefghijklmnopqrstuvwxyzëäöüéêèûîâABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜËÉ'`-"
     splits     = [(word[:i], word[i:])    for i in range(len(word) + 1)]
     deletes    = [L + R[1:]               for L, R in splits if R]
     transposes = [L + R[1] + R[0] + R[2:] for L, R in splits if len(R)>1]
@@ -51,7 +51,7 @@ def edits2(word):
 
 def correct_text(text, sim_ratio):
     #Correct all the words within a text, returning the corrected text.
-    corr_cand = re.sub('[a-zA-Z-ëäöüéêèûîâÄÖÜËÉ]+', correct_match, text)
+    corr_cand = re.sub("[a-zA-Z-ëäöüéêèûîâÄÖÜËÉ'`-]+", correct_match, text)
     if fuzz.ratio(text, corr_cand) >= sim_ratio:
         return corr_cand
     else:
@@ -60,7 +60,7 @@ def correct_text(text, sim_ratio):
 def correct_match(match):
     #Spell-correct word in match, and preserve proper upper/lower/title case.
     word = match.group()
-    return case_of(word)(correct(word.lower()))
+    return case_of(word)(correct(word))
 
 def case_of(text):
     #Return the case-function appropriate for text: upper, lower, title, or just str.
