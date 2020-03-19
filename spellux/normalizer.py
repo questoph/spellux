@@ -80,7 +80,7 @@ vectorizer = TfidfVectorizer(min_df=1, analyzer=ngrams, lowercase=False)
 tfidf = vectorizer.fit_transform(lemma_set)
 nbrs = NearestNeighbors(n_neighbors=1, n_jobs=-1).fit(tfidf)
 
-## Variant/frequency dictionary based on data from spellchecker.lu. 
+## Variant/frequency dictionary based on data from spellchecker.lu.
 ### Only available for internal training purposes
 corrdict_relpath = "data/correction_dict_extended.json"
 corrdict_filepath = os.path.join(thedir, corrdict_relpath)
@@ -99,7 +99,7 @@ with open(corrdict_filepath, encoding="utf-8") as corr_file:
         pass
 
 # Define list to collect unknown words
-not_in_dict = set()  
+not_in_dict = set()
 savedir = os.getcwd()
 unknown_relpath = "unknown_words.txt"
 unknown_filepath = os.path.join(savedir, unknown_relpath)
@@ -138,7 +138,7 @@ def eval_emb_cand(word, sim_ratio):
         sim_cands = model.wv.most_similar(positive=word, topn=10)
         for cand in sim_cands:
             emb_cands.add(cand[0])
-        # Evaluate correction candidate using fuzzy string matching  
+        # Evaluate correction candidate using fuzzy string matching
         fuzz_cand = process.extractOne(word, emb_cands)
         emb_cand = fuzz_cand[0]
         if fuzz.ratio(word, emb_cand) >= sim_ratio:
@@ -147,7 +147,7 @@ def eval_emb_cand(word, sim_ratio):
             return word
     except KeyError:
         return word
-  
+
 ## Function to evaluate the K nearest neighbors using TF-IDF
 def eval_lem_cand(word, lemmalist, sim_ratio):
     if isinstance(word, list) == False:
@@ -160,7 +160,7 @@ def eval_lem_cand(word, lemmalist, sim_ratio):
     else:
         word = "".join(word)
         return word
-    
+
 ## Function to evaluate candiatate based on combination of other methods
 def eval_combo_cand(word, lemmalist, sim_ratio):
     train_cands = [eval_emb_cand(word, sim_ratio), correct_text(word, sim_ratio), eval_lem_cand(word, lemmalist, sim_ratio)]
@@ -181,13 +181,13 @@ def eval_combo_cand(word, lemmalist, sim_ratio):
 ### Only available internally for training the matching dictionary
 def eval_varfreq_cand(word, lemvardict, lemfreq):
     corr_vars = []
-    for k, v in lemvardict.items(): 
+    for k, v in lemvardict.items():
         if word in v:
             corr_vars.append(k)
     # Replace word if 1 variant exists in correction dict
-    if len(corr_vars) == 0: 
-        cand = word 
-    elif len(corr_vars) == 1: 
+    if len(corr_vars) == 0:
+        cand = word
+    elif len(corr_vars) == 1:
         cand = "".join(corr_vars)
     elif len(corr_vars) > 1:
         freq_corr = {}
@@ -200,9 +200,9 @@ def eval_varfreq_cand(word, lemvardict, lemfreq):
         # Evaluate correction candidates based on max value for frequency
         cand = max(freq_corr.items(), key=operator.itemgetter(1))[0]
     return cand
-        
-## Function for the correction of n-rule spellings 
-### Covers basic rule including most exceptions; 
+
+## Function for the correction of n-rule spellings
+### Covers basic rule including most exceptions;
 ### Foreign words and names handling still missing)
 def correct_nrule(text, indexing):
     correct_text = []
@@ -211,7 +211,7 @@ def correct_nrule(text, indexing):
     # List of onset+1 contexts for which n is not deleted before y
     context_y = ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "z"]
     # Copy of text without indices for index matching in indexing mode
-    text_ = [] 
+    text_ = []
     for token in text:
         if token in string.punctuation:
             text_.append(token)
@@ -255,10 +255,10 @@ def correct_nrule(text, indexing):
                         correct_text.append(word[0:-2] + index)
                 except IndexError:
                     correct_text.append(word + index)
-            else: 
+            else:
                 correct_text.append(word + index)
         elif word[-1] == "n":
-            # Strip "-n" ending from word            
+            # Strip "-n" ending from word
             if word in n_replace_list or word.endswith("en") == True or word.endswith("äin") == True or word.endswith("eeën") == True:
                 try:
                     onset = context_right[0]
@@ -280,13 +280,14 @@ def correct_nrule(text, indexing):
         else:
             correct_text.append(word + index)
     return correct_text
-    
-## Function to reduce word forms to their lemma 
+
+## Function to reduce word forms to their lemma
 ### Based on the inflection for dictionary
 def lemmatize_text(text, lemdict=lemdict, indexing=False, sim_ratio=75):
     correct_text = []
-    text_ = [] 
-    pattern = r"^[a-zA-Z]([\w'`-])*[a-zA-Z]?$"
+    text_ = []
+    alpha = "a-zA-Z-äüöÄÖÜëéËÉ"
+    pattern = rf"^[{alpha}]([{alpha}'`-])*[{alpha}]?$"
     for token in text:
         if token in string.punctuation or re.match(pattern, token) is None:
             text_.append(token)
@@ -304,14 +305,14 @@ def lemmatize_text(text, lemdict=lemdict, indexing=False, sim_ratio=75):
         elif indexing == False:
             index = ""
         lem_cands = []
-        for k, v in lemdict.items(): 
+        for k, v in lemdict.items():
             if word in v["variants"]:
                 tup = (k, v["pos"])
                 lem_cands.append(tup)
         # Replace word if 1 variant exists in correction dict
-        if len(lem_cands) == 0: 
-            correct_text.append(word + index) 
-        elif len(lem_cands) == 1: 
+        if len(lem_cands) == 0:
+            correct_text.append(word + index)
+        elif len(lem_cands) == 1:
             cand = lem_cands[0][0]
             correct_text.append(cand + index)
         elif len(lem_cands) > 1:
@@ -341,7 +342,7 @@ def update_matchdict(matchdict, reset):
         elif reset == True:
             matchdict = ""
             out.write(matchdict)
-            
+
 ## Function to save unknown words to file
 def save_unknown(notindict):
     with open(unknown_filepath, 'w', encoding="utf-8") as out:
@@ -358,22 +359,22 @@ def update_resources(matchdict=True, unknown=False,  reset_matchdict=False):
 # Main function to correct text based on correction resources
 ## Set options to streamline workflow
 def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_ratio=75, add_matches=True, stats=True, nrule=True, print_unknown=False, indexing=False, lemmatize=False, tolist=False, progress=False):
-    
+
     #Set alphabet for string pattern matching
     alpha = "a-zA-Z-äüöÄÖÜëéËÉ"
-    
+
     # Define set to collect unknown words
     not_found = set()
-    
+
     # Set counters for stats
     word_count, corr_count, miss_count = 0, 0, 0
-    
+
     # Include exception dict in matching dict
     if len(exceptions) > 0:
         match_dict.update(exceptions)
-    
+
     match_count = len(match_dict)
-    
+
     # Parse input text from string or token list
     if isinstance(text, list) == True:
         words = text
@@ -383,7 +384,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
         doc = nlp(text)
         for token in doc:
             words.append(token.text)
-    
+
     if progress == True:
         # Set progress bar for correction process
         words_ = pbar(words).start()
@@ -422,7 +423,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
                 match_dict[word] = word
         elif word.lower() in lemma_set:
             # Check word.lower() against lemma list
-            if indexing == True: 
+            if indexing == True:
                 text_corr.append(word + "₂")
             else:
                 text_corr.append(word)
@@ -437,7 +438,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
             if add_matches == True:
                 match_dict[word] = word.title()
             corr_count +=1
-        else: 
+        else:
             # Stop correction here if set to safemode (no fuzzy matching)
             if mode == "safe":
                 if indexing == True:
@@ -447,7 +448,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
                 not_found.add(word)
                 miss_count +=1
             else:
-                if mode == "model": 
+                if mode == "model":
                     # Evaluate correction candidate using word embedding model
                     deamb = eval_emb_cand(word, sim_ratio)
                 elif mode == "norvig":
@@ -469,7 +470,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
                 else:
                     print("This is not a valid mode! Please try again.")
                     break
-                
+
                 if deamb == word:
                     # Keep uncorrected word, add it to list of missing words
                     if indexing == True:
@@ -480,7 +481,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
                     miss_count +=1
                 else:
                     # Add evaluated correction candidate
-                    if indexing == True: 
+                    if indexing == True:
                         text_corr.append(deamb + "₃")
                     else:
                         text_corr.append(deamb)
@@ -510,7 +511,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
         print(list(not_found))
     # Print list of corrected tokens (True) or re-join text to string
     if tolist == True:
-       pass 
+       pass
     else:
         text_corr = " ".join(text_corr)
         # Strip leading whitespaces for punctiation
