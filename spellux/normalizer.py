@@ -210,6 +210,8 @@ def correct_nrule(text, indexing):
     context_list = ["u", "U", "n", "N", "i", "I", "t", "T", "e", "E", "d", "D", "z", "Z", "o", "O", "h", "H", "a", "A", "é", "É", "ë", "Ë", "ä", "Ä", "ö", "Ö", "ü", "Ü", ".", ",", "!", "?", ";", "(", ":", "-", "1", "2", "3", "8", "9"]
     # List of onset+1 contexts for which n is not deleted before y
     context_y = ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "z"]
+    # Set n correction counter
+    ncorr_count = 0
     # Copy of text without indices for index matching in indexing mode
     text_ = []
     for token in text:
@@ -253,6 +255,7 @@ def correct_nrule(text, indexing):
                         correct_text.append(word + index)
                     else:
                         correct_text.append(word[0:-2] + index)
+                        ncorr_count += 1
                 except IndexError:
                     correct_text.append(word + index)
             else:
@@ -273,13 +276,14 @@ def correct_nrule(text, indexing):
                         correct_text.append(word + index)
                     else:
                         correct_text.append(word[0:-1] + index)
+                        ncorr_count += 1
                 except IndexError:
                     correct_text.append(word + index)
             else:
                 correct_text.append(word + index)
         else:
             correct_text.append(word + index)
-    return correct_text
+    return correct_text, ncorr_count
 
 ## Function to reduce word forms to their lemma
 ### Based on the inflection for dictionary
@@ -490,13 +494,14 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
                     corr_count +=1
     # Add words not found to not_in_dict
     not_in_dict.update(not_found)
+    # Call function to correct n-rule if set to True
+    if nrule == True:
+        text_corr, ncount = correct_nrule(text_corr, indexing)
+        corr_count += ncount
     # Add counts to global stats
     totals["words"] += word_count
     totals["corrections"] += corr_count
     totals["misses"] += miss_count
-    # Call function to correct n-rule if set to True
-    if nrule == True:
-        text_corr = correct_nrule(text_corr, indexing)
     # Lemmatize words if set to True
     if lemmatize == True:
         text_corr = lemmatize_text(text_corr, lemdict, indexing, sim_ratio)
