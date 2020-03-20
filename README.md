@@ -1,6 +1,6 @@
 ## spellux - Automatic text normalization for Luxembourgish
 
-**Spellux** is a package made for the automatic correction of Luxembourgish texts. The package is written in Python 3. The code works but might still be a bit rough around the edges. The same holds true for correction accuracy: follow-up versions will bring an improved pretrained correction dictionary as well as additional algorithms for candidate evaluation. The resources in spellux are tailored to Luxembourgish, the architechture or or code snippets, however, might still be useful for other low-resource languages. So everyone feel free to test, contribute, modify.
+**Spellux** is a package made for the automatic correction of Luxembourgish texts. The package is written in **Python 3 (3.6 or higher)**. The code works but might still be a bit rough around the edges. The same holds true for correction accuracy: follow-up versions will bring an improved pretrained correction dictionary as well as additional algorithms for candidate evaluation. The resources in spellux are tailored to Luxembourgish, the architecture or or code snippets, however, might still be useful for other low-resource languages. So everyone feel free to test, contribute, modify.
 
 In its current state, the package is a bit resource-heavy and not very fast, especially when you use it for larger chunks of text with a lot of words not yet recorded in the pretrained dictionary or lemma list. This will change with following releases and a better correction dictionary. For now, the package will be used mainly for testing, evaluation, and development, as it does return a number of wrong corrections. This is mainly due to the large amount of orthographic variation in Luxembourgish.
 
@@ -12,7 +12,7 @@ The package makes use of three pretrained correction resources:
 - **Lemma list:** A list of lemmas from spellchecker.lu. The list is used for the second correction routine during processing.
 - **Word embedding model:** A word embedding model (Word2Vec) trained on the entire RTL.lu corpus data. It is used for candidate evaluation in the third correction routine (modes 'model' and 'combo').
 
-All correction resources are work in progress and will be updated with following releases. The matching dict can be expanded and modified by setting the *add_matches* parameter when calling normalization method and then calling the *update_resources()* method at the end of the training session. It can also be reset if you want to retrain it based on your own data set. 
+All correction resources are work in progress and will be updated with following releases. The matching dict can be expanded and modified by setting the *add_matches* parameter when calling normalization method and then calling the *update_resources()* method at the end of the training session. It can also be reset if you want to retrain it based on your own data set.
 
 The correction resources for the package stem from two major resources:
 
@@ -64,8 +64,8 @@ text = "Eche hun d'Wort heut den Muaren mussen leesen."
 spellux.global_stats(text, reset=True)
 
 # Call the function on a new instance
-correct = spellux.normalize_text(text, exceptions=excs, mode='combo', sim_ratio=75, 
-          add_matches=True, stats=True, print_unknown=False, nrule=True, indexing=False, 
+correct = spellux.normalize_text(text, exceptions=excs, mode='combo', sim_ratio=75,
+          add_matches=True, stats=True, print_unknown=False, nrule=True, indexing=False,
           lemmatize=False, tolist=False, progress=False)
 
 # Print the result of the correction
@@ -94,14 +94,14 @@ Note: You can use the Jupyter notebook to test the package.
 The corrector function takes a couple of arguments to specify the processing and output options.
 
 ```Python
-spellux.normalize_text(text, exceptions={}, mode='safe', sim_ratio=75, add_matches=True, 
-                       stats=True, print_unknown=False, nrule=True, indexing=False, 
+spellux.normalize_text(text, exceptions={}, mode='safe', sim_ratio=75, add_matches=True,
+                       stats=True, print_unknown=False, nrule=True, indexing=False,
                        lemmatize=False, tolist=False, progress=False)
 ```
 
 ```Python
 text
-``` 
+```
 This is the only obligatory argument. It specifies the string or token list to process.
 
 ```Python
@@ -109,7 +109,7 @@ exceptions={}/dict_name
 ```
 *Default setting: { }*
 
-You can specify an exception dictionary (of type {*variant*:*lemma*}) to define specific variant-lemma pairs relevant to your data. 
+You can specify an exception dictionary (of type {*variant*:*lemma*}) to define specific variant-lemma pairs relevant to your data.
 **Note:** If you set the *add_matches* paramter to *True*, this option replaces the existing matches in the correction resources for the variants specified in the dict.
 
 ```Python
@@ -214,7 +214,7 @@ spellux.lemmatize_text(text, sim_ratio=75)
 
 ```Python
 text
-``` 
+```
 This is the only obligatory argument. It specifies the input to process.
 **Note:** The input text has to be a list of tokens, not a string.
 
@@ -264,7 +264,7 @@ spellux.global_stats(corpus, reset=False, report=False)
 ```
 ```Python
 corpus
-``` 
+```
 Pass the variable that holds your corpus here to compute global correction stats.
 
 ```Python
