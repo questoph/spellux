@@ -12,26 +12,27 @@ from fuzzywuzzy import fuzz
 from collections import Counter
 
 thedir = os.path.dirname(__file__)
+data_dir = "data"
 
 def words(text): return re.findall("[a-zA-Z-ëäöüéêèûîâÄÖÜËÉ'`-]+", text)
 
-text_relpath = "data/rtl_news_articles_clean_puretext3.txt"
-text_filepath = os.path.join(thedir, text_relpath)
+text_relpath = "rtl_news_articles_clean_puretext3.txt"
+text_filepath = os.path.join(thedir, data_dir, text_relpath)
 WORDS = Counter(words(open(text_filepath).read()))
 
-def P(word, N=sum(WORDS.values())): 
+def P(word, N=sum(WORDS.values())):
     #Probability of word.
     return WORDS[word] / N
 
-def correct(word): 
+def correct(word):
     #Most probable spelling correction for word.
     return max(candidates(word), key=P)
 
-def candidates(word): 
+def candidates(word):
     #Generate possible spelling corrections for word.
     return (known([word]) or known(edits1(word)) or known(edits2(word)) or [word])
 
-def known(words): 
+def known(words):
     #The subset of `words` that appear in the dictionary of WORDS.
     return set(w for w in words if w in WORDS)
 
@@ -45,7 +46,7 @@ def edits1(word):
     inserts    = [L + c + R               for L, R in splits for c in alphabet]
     return set(deletes + transposes + replaces + inserts)
 
-def edits2(word): 
+def edits2(word):
     #All edits that are two edits away from word.
     return (e2 for e1 in edits1(word) for e2 in edits1(e1))
 
@@ -55,7 +56,7 @@ def correct_text(text, sim_ratio):
     if fuzz.ratio(text, corr_cand) >= sim_ratio:
         return corr_cand
     else:
-        return text 
+        return text
 
 def correct_match(match):
     #Spell-correct word in match, and preserve proper upper/lower/title case.

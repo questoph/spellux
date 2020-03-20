@@ -21,6 +21,7 @@ from progressbar import ProgressBar
 pbar = ProgressBar()
 
 thedir = os.path.dirname(__file__)
+data_dir = "data"
 
 from .norvig_corrector import correct_text
 
@@ -38,34 +39,34 @@ with open(matchdict_filepath, "r", encoding="utf-8") as match_file:
 
 ## Lemma list based on data from spellchecker.lu
 print("- importing lemma list")
-lemlist_relpath = "data/lemma_list_spellchecker.txt"
-lemlist_filepath = os.path.join(thedir, lemlist_relpath)
+lemlist_relpath = "lemma_list_spellchecker.txt"
+lemlist_filepath = os.path.join(thedir, data_dir, lemlist_relpath)
 lemma_set = set(line.strip() for line in open(lemlist_filepath))
 lemma_list = list(lemma_set)
 
 ## Lemma dictionary with variants for lemmatization
 print("- importing inflection dictionary")
-lemdict_relpath = "data/lemma_dict_pos.json"
-lemdict_filepath = os.path.join(thedir, lemdict_relpath)
+lemdict_relpath = "lemma_dict_pos.json"
+lemdict_filepath = os.path.join(thedir, data_dir, lemdict_relpath)
 lemdict_json = open(lemdict_filepath, "r", encoding="utf-8").read()
 lemdict = json.loads(lemdict_json)
 
 ## Word embedding model based on text data (articles, comments) from RTL.lu
 print("- importing word embedding model")
-model_relpath = "data/rtl_data_case_model_dim200_win5_iter5_count25.bin"
-model_filepath = os.path.join(thedir, model_relpath)
+model_relpath = "rtl_data_case_model_dim200_win5_iter5_count25.bin"
+model_filepath = os.path.join(thedir, data_dir, model_relpath)
 model = Word2Vec.load(model_filepath)
 
 ## Additional lists for n-rule correction
 print("- importing n-rule exception lists")
 ### List of words ending in nn to whom the n-rule applies
-nns_relpath = "data/nn_replace_list.txt"
-nns_filepath = os.path.join(thedir, nns_relpath)
+nns_relpath = "nn_replace_list.txt"
+nns_filepath = os.path.join(thedir, data_dir, nns_relpath)
 nn_replace_list = set(line.strip() for line in open(nns_filepath))
 
 ### List of words ending in n to whom the n-rule does not apply
-ns_relpath = "data/n_replace_list.txt"
-ns_filepath = os.path.join(thedir, ns_relpath)
+ns_relpath = "n_replace_list.txt"
+ns_filepath = os.path.join(thedir, data_dir, ns_relpath)
 n_replace_list = set(line.strip() for line in open(ns_filepath))
 
 ## Train Tfidf matrix based on ngrams of words in lemma list
@@ -82,8 +83,8 @@ nbrs = NearestNeighbors(n_neighbors=1, n_jobs=-1).fit(tfidf)
 
 ## Variant/frequency dictionary based on data from spellchecker.lu.
 ### Only available for internal training purposes
-corrdict_relpath = "data/correction_dict_extended.json"
-corrdict_filepath = os.path.join(thedir, corrdict_relpath)
+corrdict_relpath = "correction_dict_extended.json"
+corrdict_filepath = os.path.join(thedir, data_dir, corrdict_relpath)
 with open(corrdict_filepath, encoding="utf-8") as corr_file:
     try:
         corr_dict = json.load(corr_file)
