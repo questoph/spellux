@@ -41,7 +41,7 @@ with open(matchdict_filepath, "r", encoding="utf-8") as match_file:
 print("- importing lemma list")
 lemlist_relpath = "lemma_list_spellchecker.txt"
 lemlist_filepath = os.path.join(thedir, data_dir, lemlist_relpath)
-lemma_set = set(line.strip() for line in open(lemlist_filepath))
+lemma_set = set(line.strip() for line in open(lemlist_filepath, encoding="utf-8"))
 lemma_list = list(lemma_set)
 
 ## Lemma dictionary with variants for lemmatization
@@ -62,12 +62,12 @@ print("- importing n-rule exception lists")
 ### List of words ending in nn to whom the n-rule applies
 nns_relpath = "nn_replace_list.txt"
 nns_filepath = os.path.join(thedir, data_dir, nns_relpath)
-nn_replace_list = set(line.strip() for line in open(nns_filepath))
+nn_replace_list = set(line.strip() for line in open(nns_filepath, encoding="utf-8"))
 
 ### List of words ending in n to whom the n-rule does not apply
 ns_relpath = "n_replace_list.txt"
 ns_filepath = os.path.join(thedir, data_dir, ns_relpath)
-n_replace_list = set(line.strip() for line in open(ns_filepath))
+n_replace_list = set(line.strip() for line in open(ns_filepath, encoding="utf-8"))
 
 ## Train Tfidf matrix based on ngrams of words in lemma list
 ### Function to produce ngrams for words in list
