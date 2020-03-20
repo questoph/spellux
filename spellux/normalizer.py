@@ -30,8 +30,8 @@ print("Preparing spellux resources:")
 ## Matching dict (variant:lemma) trained from comment data from RTL.lu
 print("- importing matching dictionary")
 match_dict = {}
-matchdict_relpath = "data/matching_dict.txt"
-matchdict_filepath = os.path.join(thedir, matchdict_relpath)
+matchdict_relpath = "matching_dict.txt"
+matchdict_filepath = os.path.join(thedir, data_dir, matchdict_relpath)
 with open(matchdict_filepath, "r", encoding="utf-8") as match_file:
     data = csv.reader(match_file, delimiter=',')
     for row in data:
