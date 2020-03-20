@@ -291,7 +291,7 @@ def correct_nrule(text, indexing):
 def lemmatize_text(text, lemdict=lemdict, indexing=False, sim_ratio=75):
     correct_text = []
     text_ = []
-    alpha = "a-zA-Z-äüöÄÖÜëéËÉ"
+    alpha = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
     pattern = rf"^[{alpha}]([{alpha}'`-])*[{alpha}]?$"
     for token in text:
         if token in string.punctuation or re.match(pattern, token) is None:
@@ -366,7 +366,7 @@ def update_resources(matchdict=True, unknown=False,  reset_matchdict=False):
 def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_ratio=75, add_matches=True, stats=True, nrule=True, print_unknown=False, indexing=False, lemmatize=False, tolist=False, progress=False):
 
     #Set alphabet for string pattern matching
-    alpha = "a-zA-Z-äüöÄÖÜëéËÉ"
+    alpha = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
 
     # Define set to collect unknown words
     not_found = set()
