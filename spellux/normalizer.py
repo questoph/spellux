@@ -10,7 +10,7 @@ import string
 import json
 import operator
 from collections import Counter
-from fuzzywuzzy import process, fuzz
+import jellyfish as jf
 from gensim.models import Word2Vec
 from spacy.lang.lb import Luxembourgish
 nlp = Luxembourgish()
@@ -140,9 +140,9 @@ def eval_emb_cand(word, sim_ratio):
         for cand in sim_cands:
             emb_cands.add(cand[0])
         # Evaluate correction candidate using fuzzy string matching
-        fuzz_cand = process.extractOne(word, emb_cands)
+        fuzz_cand = get_best_match(word, emb_cands)
         emb_cand = fuzz_cand[0]
-        if fuzz.ratio(word, emb_cand) >= sim_ratio:
+        if fuzz_cand[1] >= sim_ratio:
             return emb_cand
         else:
             return word
@@ -156,7 +156,8 @@ def eval_lem_cand(word, lemmalist, sim_ratio):
     queryTFIDF_ = vectorizer.transform(word)
     list_index = nbrs.kneighbors(queryTFIDF_)
     lem_cand = "".join(lemmalist[int(list_index[1])])
-    if fuzz.ratio(word, lem_cand) >= sim_ratio:
+    eval_cand = get_best_match(word, lem_cand)
+    if eval_cand[1] >= sim_ratio:
         return lem_cand
     else:
         word = "".join(word)
@@ -171,9 +172,9 @@ def eval_combo_cand(word, lemmalist, sim_ratio):
         cand = "".join([k for k, v in counts.items() if v == maxval])
         return cand
     else:
-        extract_cand = process.extractOne(word, train_cands)
+        extract_cand = get_best_match(word, train_cands)
         combo_cand = extract_cand[0]
-        if fuzz.ratio(word, combo_cand) >= sim_ratio:
+        if extract_cand[1] >= sim_ratio:
             return combo_cand
         else:
             return word
@@ -201,6 +202,20 @@ def eval_varfreq_cand(word, lemvardict, lemfreq):
         # Evaluate correction candidates based on max value for frequency
         cand = max(freq_corr.items(), key=operator.itemgetter(1))[0]
     return cand
+
+## Function to evaluate the best similiarity match using jellyfish
+def get_best_match(word, cands):
+    if isinstance(cands, list) == False:
+        cands = [cands]
+    print(word, cands)
+    best_match = None
+    highest_sim = 0
+    for cand in cands:
+        score = jf.jaro_winkler(word, cand)
+        if(score > highest_sim):
+            highest_sim = score
+            best_match = "".join(cand)
+    return best_match, highest_sim
 
 ## Function for the correction of n-rule spellings
 ### Covers basic rule including most exceptions;
@@ -329,9 +344,9 @@ def lemmatize_text(text, lemdict=lemdict, indexing=False, sim_ratio=75):
             else:
                 # Extract likeliest candidate using fuzzy string matching
                 cands = [lemtup[0] for lemtup in lem_cands]
-                extract_cand = process.extractOne(word, cands)
+                extract_cand = get_best_match(word, cands)
                 lem_cand = extract_cand[0]
-                if fuzz.ratio(word, lem_cand) >= sim_ratio:
+                if extract_cand[1] >= sim_ratio:
                     correct_text.append(lem_cand + index)
                 else:
                     correct_text.append(word + index)

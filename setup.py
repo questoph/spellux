@@ -9,4 +9,5 @@ setup(name='spellux',
       license='MIT',
       packages=['spellux'],
       zip_safe=False,
-      include_package_data=True)
+      include_package_data=True,
+      python_requires=">=3.6")
