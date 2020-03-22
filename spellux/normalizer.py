@@ -207,7 +207,6 @@ def eval_varfreq_cand(word, lemvardict, lemfreq):
 def get_best_match(word, cands):
     if isinstance(cands, list) == False:
         cands = [cands]
-    print(word, cands)
     best_match = None
     highest_sim = 0
     for cand in cands:

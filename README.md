@@ -37,10 +37,9 @@ pip install -r requirements.txt
 
 The following external packages are required for working with spellux:
 
-- **fuzzywuzzy** (>=0.17.0): fuzzy string matching using a modified Levenshtein distance
 - **gensim** (>=3.8.0): processing of the word embedding model (Word2Vec)
+- **jellyfish** (>=0.7.2): fuzzy string matching including different algorithms
 - **progressbar** (>=2.5): progress visualization for text processing
-- **python-Levenshtein** (>=0.12.0): addition to fuzzywuzzy to speed up evaluation
 - **spacy** (>=2.2.2): NLP including language support for Luxembourgish
 - **scikit-learn** (>=0.22.1): machine learning package used for tf-idf matching
 
