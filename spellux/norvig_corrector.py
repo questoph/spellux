@@ -8,7 +8,7 @@ import os
 import re
 import math
 import string
-from fuzzywuzzy import fuzz
+from rapidfuzz import fuzz
 from collections import Counter
 
 thedir = os.path.dirname(__file__)

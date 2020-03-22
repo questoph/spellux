@@ -37,10 +37,9 @@ pip install -r requirements.txt
 
 The following external packages are required for working with spellux:
 
-- **fuzzywuzzy** (>=0.17.0): fuzzy string matching using a modified Levenshtein distance
+- **frapidfuzz** (>=0.2.0): fuzzy string matching using a modified Levenshtein distance
 - **gensim** (>=3.8.0): processing of the word embedding model (Word2Vec)
 - **progressbar** (>=2.5): progress visualization for text processing
-- **python-Levenshtein** (>=0.12.0): addition to fuzzywuzzy to speed up evaluation
 - **spacy** (>=2.2.2): NLP including language support for Luxembourgish
 - **scikit-learn** (>=0.22.1): machine learning package used for tf-idf matching
 
@@ -121,10 +120,10 @@ mode='safe'/'model'/'norvig'/'tf-idf'/'combo'
 Specify the correction mode for processing:
 
 - **safe** mode uses only the existing correction resources (lemma list, pretrained matching dict) for correction. This increases the number of variants not found but limits the number of correction errors.
-- **model** mode uses the word embedding model for candidate evaluation. The function returns the 10 nearest neighbors for a word and evaluates the most likely candidate using string simililarity matching in *fuzzywuzzy*. This mode is very fast but sometimes does not return a candidate, especially for rare variants.
+- **model** mode uses the word embedding model for candidate evaluation. The function returns the 10 nearest neighbors for a word and evaluates the most likely candidate using string simililarity matching in *rapidfuzz*. This mode is very fast but sometimes does not return a candidate, especially for rare variants.
 - **norvig** mode uses the well-known spelling corrector written by Peter Norvig (see [norvig.com/spell-correct.html](https://norvig.com/spell-correct.html)). Here, words within max. 2 edits distance are evaluated by probability agaist a large text file (containing RTL atricle data). This method works best for typo detection. Also, it tends to be slow when processing long words.
 - **tf-idf** mode uses an ngram-based similartiy matrix for candidate evaluation based on the *TfidfVectorizer* method in *scikit-learn*. Faster than *norvig* mode, and always returns a candidate – but sometimes weird ones.
-- **combo** mode determines correction candidates based on a combination of *model*, *norvig*, and *td-idf*. The three candidates are evaluated using string simililarity matching in *fuzzywuzzy*. Given its composition of three correction processes plus evaluation, this is the slowest mode.
+- **combo** mode determines correction candidates based on a combination of *model*, *norvig*, and *td-idf*. The three candidates are evaluated using string simililarity matching in *rapidfuzz*. Given its composition of three correction processes plus evaluation, this is the slowest mode.
 
 **Note:** There is an additional **training** mode that is only available internally for development and testing purposes. So don't bother activating it. Won't work.
 
@@ -133,7 +132,7 @@ sim_ratio=75 # number between 0 and 100
 ```
 *Default setting: 75*
 
-This setting specifies the similiaty ratio for candidate correction to finetune correction – and reduce the number of clearly wrong candidates. During the evaluation of a candiate for the correction, the input string and the correction candidates are compared as for string similarity using the *fuzz.ratio()* process in *fuzzywuzzy*. If the similarity ratio lies below the defined threshold, the correction candidate is disregarded. This setting affects the correction modes *'model'/'norvig'/'tf-idf'/'combo'*.
+This setting specifies the similiaty ratio for candidate correction to finetune correction – and reduce the number of clearly wrong candidates. During the evaluation of a candiate for the correction, the input string and the correction candidates are compared as for string similarity using the *fuzz.ratio()* process in *rapidfuzz*. If the similarity ratio lies below the defined threshold, the correction candidate is disregarded. This setting affects the correction modes *'model'/'norvig'/'tf-idf'/'combo'*.
 
 ```Python
 add_matches=False/True

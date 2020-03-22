@@ -10,7 +10,7 @@ import string
 import json
 import operator
 from collections import Counter
-from fuzzywuzzy import process, fuzz
+from rapidfuzz import process, fuzz
 from gensim.models import Word2Vec
 from spacy.lang.lb import Luxembourgish
 nlp = Luxembourgish()
