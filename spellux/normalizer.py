@@ -111,15 +111,15 @@ print("\n All set. Let's go!")
 totals = {"words":0, "corrections":0, "misses":0}
 
 def global_stats(corpus, totals=totals, reset=False, report=False):
-    if isinstance(corpus, list) == True:
+    if isinstance(corpus, list) is True:
         texts = len(corpus)
-    elif isinstance(corpus, str) == True:
+    elif isinstance(corpus, str) is True:
         texts = 1
-    if reset == True:
+    if reset is True:
         totals["words"], totals["corrections"], totals["misses"] = 0, 0, 0
         print("Global stats have been set to zero!")
     else:
-        if report == True:
+        if report is True:
             print("Correction statistics:\n")
             print("- Number of texts: {}" .format(str(texts)))
             print("- Number of words: {}" .format(str(totals["words"])))
@@ -151,7 +151,7 @@ def eval_emb_cand(word, sim_ratio):
 
 ## Function to evaluate the K nearest neighbors using TF-IDF
 def eval_lem_cand(word, lemmalist, sim_ratio):
-    if isinstance(word, list) == False:
+    if isinstance(word, list) is False:
         word = [word]
     queryTFIDF_ = vectorizer.transform(word)
     list_index = nbrs.kneighbors(queryTFIDF_)
@@ -205,7 +205,7 @@ def eval_varfreq_cand(word, lemvardict, lemfreq):
 
 ## Function to evaluate the best similiarity match using jellyfish
 def get_best_match(word, cands):
-    if isinstance(cands, list) == False:
+    if isinstance(cands, list) is False:
         cands = [cands]
     best_match = None
     highest_sim = 0
@@ -238,14 +238,14 @@ def correct_nrule(text, indexing):
     index_buffer = {}
     # start correction routine
     for word in text:
-        if indexing == True:
+        if indexing is True:
             text = text_
             if word in string.punctuation:
                 index = ""
             else:
                 index = word[-1]
                 word = word[:-1]
-        elif indexing == False:
+        elif indexing is False:
             index = ""
         # Create image of text with index position for every word
         buff = 0
@@ -277,7 +277,7 @@ def correct_nrule(text, indexing):
                 correct_text.append(word + index)
         elif word[-1] == "n":
             # Strip "-n" ending from word
-            if word in n_replace_list or word.endswith("en") == True or word.endswith("äin") == True or word.endswith("eeën") == True:
+            if word in n_replace_list or word.endswith("en") is True or word.endswith("äin") is True or word.endswith("eeën") is True:
                 try:
                     onset = context_right[0]
                     yonset = context_right[1]
@@ -314,14 +314,14 @@ def lemmatize_text(text, lemdict=lemdict, indexing=False, sim_ratio=75):
             text_.append(token[:-1])
     # start correction routine
     for word in text:
-        if indexing == True:
+        if indexing is True:
             text = text_
             if word in string.punctuation or re.match(pattern, token) is None:
                 index = ""
             else:
                 index = word[-1]
                 word = word[:-1]
-        elif indexing == False:
+        elif indexing is False:
             index = ""
         lem_cands = []
         for k, v in lemdict.items():
@@ -355,10 +355,10 @@ def lemmatize_text(text, lemdict=lemdict, indexing=False, sim_ratio=75):
 ## Function to write the updated matching dict to file or reset it to empty
 def update_matchdict(matchdict, reset):
     with open(matchdict_filepath, "w", newline="", encoding="utf-8") as out:
-        if reset == False:
+        if reset is False:
             for key in matchdict.keys():
                 out.write("{},{}\n" .format(key, matchdict[key]))
-        elif reset == True:
+        elif reset is True:
             matchdict = ""
             out.write(matchdict)
 
@@ -370,9 +370,9 @@ def save_unknown(notindict):
 
 ## Function to update resources
 def update_resources(matchdict=True, unknown=False,  reset_matchdict=False):
-    if matchdict == True:
+    if matchdict is True:
         update_matchdict(match_dict, reset_matchdict)
-    if unknown == True:
+    if unknown is True:
         save_unknown(list(not_in_dict))
 
 # Main function to correct text based on correction resources
@@ -395,7 +395,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
     match_count = len(match_dict)
 
     # Parse input text from string or token list
-    if isinstance(text, list) == True:
+    if isinstance(text, list) is True:
         words = text
     else:
         # Tokenize string input with spaCy
@@ -404,7 +404,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
         for token in doc:
             words.append(token.text)
 
-    if progress == True:
+    if progress is True:
         # Set progress bar for correction process
         words_ = pbar(words).start()
     else:
@@ -424,9 +424,9 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
         elif word in match_dict:
             # Check word against matching dict
             repl = match_dict[word]
-            if word.istitle() == True and repl.islower() == True:
+            if word.istitle() is True and repl.islower() is True:
                 repl = repl.title()
-            if indexing == True:
+            if indexing is True:
                 text_corr.append(repl + "₁")
             else:
                 text_corr.append(repl)
@@ -434,33 +434,33 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
                 corr_count +=1
         elif word in lemma_set:
             # Check word against lemma list
-            if indexing == True:
+            if indexing is True:
                 text_corr.append(word + "₂")
             else:
                 text_corr.append(word)
-            if add_matches == True:
+            if add_matches is True:
                 match_dict[word] = word
         elif word.lower() in lemma_set:
             # Check word.lower() against lemma list
-            if indexing == True:
+            if indexing is True:
                 text_corr.append(word + "₂")
             else:
                 text_corr.append(word)
-            if add_matches == True:
+            if add_matches is True:
                 match_dict[word] = word.lower()
         elif word.title() in lemma_set:
             # Check word.title() against lemma list
-            if indexing == True:
+            if indexing is True:
                 text_corr.append(word_.title() + "₂")
             else:
                 text_corr.append(word.title())
-            if add_matches == True:
+            if add_matches is True:
                 match_dict[word] = word.title()
             corr_count +=1
         else:
             # Stop correction here if set to safemode (no fuzzy matching)
             if mode == "safe":
-                if indexing == True:
+                if indexing is True:
                     text_corr.append(word + "₀")
                 else:
                     text_corr.append(word)
@@ -492,7 +492,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
 
                 if deamb == word:
                     # Keep uncorrected word, add it to list of missing words
-                    if indexing == True:
+                    if indexing is True:
                         text_corr.append(word + "₀")
                     else:
                         text_corr.append(word)
@@ -500,17 +500,17 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
                     miss_count +=1
                 else:
                     # Add evaluated correction candidate
-                    if indexing == True:
+                    if indexing is True:
                         text_corr.append(deamb + "₃")
                     else:
                         text_corr.append(deamb)
-                    if add_matches == True:
+                    if add_matches is True:
                         match_dict[word] = deamb
                     corr_count +=1
     # Add words not found to not_in_dict
     not_in_dict.update(not_found)
     # Call function to correct n-rule if set to True
-    if nrule == True:
+    if nrule is True:
         text_corr, ncount = correct_nrule(text_corr, indexing)
         corr_count += ncount
     # Add counts to global stats
@@ -518,19 +518,19 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
     totals["corrections"] += corr_count
     totals["misses"] += miss_count
     # Lemmatize words if set to True
-    if lemmatize == True:
+    if lemmatize is True:
         text_corr = lemmatize_text(text_corr, lemdict, indexing, sim_ratio)
     # Print statistics if set to True
-    if stats == True:
+    if stats is True:
         print("Number of words: {}" .format(str(word_count)))
         print("Number of new matches: {}" .format(str(len(match_dict) - match_count)))
         print("Corrected items: {}" .format(str(corr_count)))
         print("Items not found: {}" .format(str(miss_count)))
     # Print list of items not found if set to True
-    if print_unknown == True:
+    if print_unknown is True:
         print(list(not_found))
     # Print list of corrected tokens (True) or re-join text to string
-    if tolist == True:
+    if tolist is True:
        pass
     else:
         text_corr = " ".join(text_corr)
