@@ -1,18 +1,36 @@
 #-*- coding: UTF-8 -*-
 
 # Reuse of Peter Novig's spelling corrector prototype
-# See https://norvig.com/spell-correct.html for the documentation
+## Modifications cocern extended alphabet and fuzzy string matching for
+## candidate evaluation
+## See https://norvig.com/spell-correct.html for the documentation
+
+#Copyright (c) 2007-2016 Peter Norvig
+#MIT license: www.opensource.org/licenses/mit-license.php
 
 from __future__ import division
 import os
 import re
 import math
 import string
-from fuzzywuzzy import fuzz
+import jellyfish as jf
 from collections import Counter
 
 thedir = os.path.dirname(__file__)
 data_dir = "data"
+
+## Additional function to evaluate the best similiarity match using jellyfish
+def get_best_match(word, cands):
+    if isinstance(cands, list) == False:
+        cands = [cands]
+    best_match = None
+    highest_sim = 0
+    for cand in cands:
+        score = jf.jaro_winkler(word, cand)
+        if(score > highest_sim):
+            highest_sim = score
+            best_match = "".join(cand)
+    return best_match, highest_sim
 
 def words(text): return re.findall("[a-zA-Z-ëäöüéêèûîâÄÖÜËÉ'`-]+", text)
 
@@ -53,7 +71,8 @@ def edits2(word):
 def correct_text(text, sim_ratio):
     #Correct all the words within a text, returning the corrected text.
     corr_cand = re.sub("[a-zA-Z-ëäöüéêèûîâÄÖÜËÉ'`-]+", correct_match, text)
-    if fuzz.ratio(text, corr_cand) >= sim_ratio:
+    corr_sim = get_best_match(word, corr_cand)
+    if corr_sim[1] >= sim_ratio:
         return corr_cand
     else:
         return text
