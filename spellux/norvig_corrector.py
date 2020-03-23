@@ -1,7 +1,7 @@
 #-*- coding: UTF-8 -*-
 
 # Reuse of Peter Novig's spelling corrector prototype
-## Modifications cocern extended alphabet and fuzzy string matching for
+## Modifications concern extended alphabet and fuzzy string matching for
 ## candidate evaluation
 ## See https://norvig.com/spell-correct.html for the documentation
 
@@ -19,7 +19,7 @@ from collections import Counter
 thedir = os.path.dirname(__file__)
 data_dir = "data"
 
-## Additional function to evaluate the best similiarity match using jellyfish
+# Additional function to evaluate the best similiarity match using jellyfish
 def get_best_match(word, cands):
     if isinstance(cands, list) == False:
         cands = [cands]
