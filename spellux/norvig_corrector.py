@@ -21,7 +21,7 @@ data_dir = "data"
 
 # Additional function to evaluate the best similiarity match using jellyfish
 def get_best_match(word, cands):
-    if isinstance(cands, list) == False:
+    if isinstance(cands, str) == True:
         cands = [cands]
     best_match = None
     highest_sim = 0
@@ -71,7 +71,7 @@ def edits2(word):
 def correct_text(text, sim_ratio):
     #Correct all the words within a text, returning the corrected text.
     corr_cand = re.sub("[a-zA-Z-ëäöüéêèûîâÄÖÜËÉ'`-]+", correct_match, text)
-    corr_sim = get_best_match(word, corr_cand)
+    corr_sim = get_best_match(text, corr_cand)
     if corr_sim[1] >= sim_ratio:
         return corr_cand
     else:

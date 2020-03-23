@@ -152,8 +152,8 @@ def eval_emb_cand(word, sim_ratio):
 ## Function to evaluate the K nearest neighbors using TF-IDF
 def eval_lem_cand(word, lemmalist, sim_ratio):
     if isinstance(word, list) is False:
-        word = [word]
-    queryTFIDF_ = vectorizer.transform(word)
+        word_ = [word]
+    queryTFIDF_ = vectorizer.transform(word_)
     list_index = nbrs.kneighbors(queryTFIDF_)
     lem_cand = "".join(lemmalist[int(list_index[1])])
     eval_cand = get_best_match(word, lem_cand)
@@ -205,7 +205,7 @@ def eval_varfreq_cand(word, lemvardict, lemfreq):
 
 ## Function to evaluate the best similiarity match using jellyfish
 def get_best_match(word, cands):
-    if isinstance(cands, list) is False:
+    if isinstance(cands, str) is True:
         cands = [cands]
     best_match = None
     highest_sim = 0
