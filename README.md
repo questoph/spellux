@@ -16,12 +16,12 @@ All correction resources are work in progress and will be updated with following
 
 The correction resources for the package stem from two major resources:
 
-- **RTL.lu:** In the context of the STRIPS project at the Unviersity of Luxembourg (see [acc.uni.lu/strips/](https://acc.uni.lu/strips/)), the RTL Media Group has provided us with all article and comment text data published on the RTL.lu website between 2008 and 2018 for the development of semantic annotation algorithms (e.g., sentiment). See [rtl.lu](https://rtl.lu) for the news portal.
+- **RTL.lu:** In the context of the STRIPS project at the University of Luxembourg (see [acc.uni.lu/strips/](https://acc.uni.lu/strips/)), the RTL Media Group has provided us with all article and comment text data published on the RTL.lu website between 2008 and 2018 for the development of semantic annotation algorithms (e.g., sentiment). See [rtl.lu](https://rtl.lu) for the news portal.
 - **spellchecker.lu:** Michel Weimerskirch, author of the online correction tool [spellchecker.lu](https://spellchecker.lu), has provided us with a lemma list and variant-correction live data. See [github.com/spellchecker-lu/dictionary-lb-lu](https://github.com/spellchecker-lu/dictionary-lb-lu) for the resources.
 
 ### Installation
 
-For now, you can download the repo to your harddisk. In Terminal, go to the top-level directory of the repo, then type:
+For now, you can download the repo to your hard disk. In Terminal, go to the top-level directory of the repo, then type:
 
 ```
 pip install .
@@ -110,7 +110,7 @@ exceptions={}/dict_name
 *Default setting: { }*
 
 You can specify an exception dictionary (of type {*variant*:*lemma*}) to define specific variant-lemma pairs relevant to your data.
-**Note:** If you set the *add_matches* paramter to *True*, this option replaces the existing matches in the correction resources for the variants specified in the dict.
+**Note:** If you set the *add_matches* parameter to *True*, this option replaces the existing matches in the correction resources for the variants specified in the dict.
 
 ```Python
 mode='safe'/'model'/'norvig'/'tf-idf'/'combo'
@@ -120,19 +120,19 @@ mode='safe'/'model'/'norvig'/'tf-idf'/'combo'
 Specify the correction mode for processing:
 
 - **safe** mode uses only the existing correction resources (lemma list, pretrained matching dict) for correction. This increases the number of variants not found but limits the number of correction errors.
-- **model** mode uses the word embedding model for candidate evaluation. The function returns the 10 nearest neighbors for a word and evaluates the most likely candidate using string simililarity matching in *fuzzywuzzy*. This mode is very fast but sometimes does not return a candidate, especially for rare variants.
-- **norvig** mode uses the well-known spelling corrector written by Peter Norvig (see [norvig.com/spell-correct.html](https://norvig.com/spell-correct.html)). Here, words within max. 2 edits distance are evaluated by probability agaist a large text file (containing RTL atricle data). This method works best for typo detection. Also, it tends to be slow when processing long words.
-- **tf-idf** mode uses an ngram-based similartiy matrix for candidate evaluation based on the *TfidfVectorizer* method in *scikit-learn*. Faster than *norvig* mode, and always returns a candidate – but sometimes weird ones.
-- **combo** mode determines correction candidates based on a combination of *model*, *norvig*, and *td-idf*. The three candidates are evaluated using string simililarity matching in *fuzzywuzzy*. Given its composition of three correction processes plus evaluation, this is the slowest mode.
+- **model** mode uses the word embedding model for candidate evaluation. The function returns the 10 nearest neighbors for a word and evaluates the most likely candidate using string similarity matching in *jellyfish*. This mode is very fast but sometimes does not return a candidate, especially for rare variants.
+- **norvig** mode uses the well-known spelling corrector written by Peter Norvig (see [norvig.com/spell-correct.html](https://norvig.com/spell-correct.html)). Here, words within max. 2 edits distance are evaluated by probability against a large text file (containing RTL article data). This method works best for typo detection. Also, it tends to be slow when processing long words.
+- **tf-idf** mode uses an ngram-based similarity matrix for candidate evaluation based on the *TfidfVectorizer* method in *scikit-learn*. Faster than *norvig* mode, and always returns a candidate – but sometimes weird ones.
+- **combo** mode determines correction candidates based on a combination of *model*, *norvig*, and *td-idf*. The three candidates are evaluated using string similarity matching in *jellyfish*. Given its composition of three correction processes plus evaluation, this is the slowest mode.
 
 **Note:** There is an additional **training** mode that is only available internally for development and testing purposes. So don't bother activating it. Won't work.
 
 ```Python
-sim_ratio=75 # number between 0 and 100
+sim_ratio=0.75 # number between 0 and 1
 ```
-*Default setting: 75*
+*Default setting: 0.75*
 
-This setting specifies the similiaty ratio for candidate correction to finetune correction – and reduce the number of clearly wrong candidates. During the evaluation of a candiate for the correction, the input string and the correction candidates are compared as for string similarity using the *fuzz.ratio()* process in *fuzzywuzzy*. If the similarity ratio lies below the defined threshold, the correction candidate is disregarded. This setting affects the correction modes *'model'/'norvig'/'tf-idf'/'combo'*.
+This setting specifies the similarity ratio for candidate correction to finetune correction – and reduce the number of clearly wrong candidates. During the evaluation of a candidate for the correction, the input string and the correction candidates are compared as for string similarity using the *fuzz.ratio()* process in *jellyfish*. If the similarity ratio lies below the defined threshold, the correction candidate is disregarded. This setting affects the correction modes *'model'/'norvig'/'tf-idf'/'combo'*.
 
 ```Python
 add_matches=False/True
@@ -166,7 +166,7 @@ nrule=False/True
 ```
 *Default setting: True*
 
-Option to correct the so called 'n-rule', a characteristic of Luxembourgish orthograpy based on phonetic context. Words ending in *-n* or *-nn* only keep their ending before vowel and certain consonants (n, t, d, z, h) in the onset of the following word. See [en.wikipedia.org/wiki/Eifeler_Regel#Luxembourgish](https://en.wikipedia.org/wiki/Eifeler_Regel#Luxembourgish) for details. For a full documentation of the rule (and its exceptions), see [https://portal.education.lu/zls/ORTHOGRAFIE](https://portal.education.lu/zls/ORTHOGRAFIE), point '6. D'n-Reegel'.
+Option to correct the so called 'n-rule', a characteristic of Luxembourgish orthography based on phonetic context. Words ending in *-n* or *-nn* only keep their ending before vowel and certain consonants (n, t, d, z, h) in the onset of the following word. See [en.wikipedia.org/wiki/Eifeler_Regel#Luxembourgish](https://en.wikipedia.org/wiki/Eifeler_Regel#Luxembourgish) for details. For a full documentation of the rule (and its exceptions), see [https://portal.education.lu/zls/ORTHOGRAFIE](https://portal.education.lu/zls/ORTHOGRAFIE), point '6. D'n-Reegel'.
 **Note:** Right now, the package covers the basic rule and most exceptions, including remaining n-endings before punctuation. It does not correct exceptions for personal and geographic names.
 
 ```Python
@@ -209,7 +209,7 @@ This option enables a progress bar for the correction process. This can be usefu
 The lemmatizer takes two arguments for reducing word forms to their lemma
 
 ```Python
-spellux.lemmatize_text(text, sim_ratio=75)
+spellux.lemmatize_text(text, sim_ratio=0.75)
 ```
 
 ```Python
@@ -219,11 +219,11 @@ This is the only obligatory argument. It specifies the input to process.
 **Note:** The input text has to be a list of tokens, not a string.
 
 ```Python
-sim_ratio=75 # number between 0 and 100
+sim_ratio=0.75 # number between 0 and 1
 ```
-*Default setting: 75*
+*Default setting: 0.75*
 
-As for the correction routine, this setting specifies the similiaty ratio for candidate correction to finetune lemmatization – and reduce the number of wrong candidates.
+As for the correction routine, this setting specifies the similarity ratio for candidate correction to finetune lemmatization – and reduce the number of wrong candidates.
 
 
 ### Arguments of the update_resources() method
@@ -283,7 +283,7 @@ report=False/True
 
 ### State of affairs & roadmap
 
-Right now, the correction routine produces too many false positive and false negative corrections. Some of these can hardly be avoided using automatic word correction, i.e., due to the large amount of spelling variation in Luxembourgish and the high number of homographs this produces when checking against the lemma list. The correction resorurces and algorithms for candicate corrections need to be tested in detail and improved to reduce the number of false negative corrections.
+Right now, the correction routine produces too many false positive and false negative corrections. Some of these can hardly be avoided using automatic word correction, i.e., due to the large amount of spelling variation in Luxembourgish and the high number of homographs this produces when checking against the lemma list. The correction resources and algorithms for candidate corrections need to be tested in detail and improved to reduce the number of false negative corrections.
 
 Another way of improving matching accuracy and candidate evaluation could be the integration of a POS and word-context (trigrams) look-up during correction. Since tokenization in spellux is done with *spaCy*, POS information easy to implement for the tokens to be corrected. Plus, the lemma list from spellchecker.lu does hold POS information. Both resources use slightly different POS annotation systems, though. These need to be harmonized to implement this resource.
 
