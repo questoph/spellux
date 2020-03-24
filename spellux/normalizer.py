@@ -302,7 +302,7 @@ def correct_nrule(text, indexing):
 
 ## Function to reduce word forms to their lemma
 ### Based on the inflection for dictionary
-def lemmatize_text(text, lemdict=lemdict, indexing=False, sim_ratio=75):
+def lemmatize_text(text, lemdict=lemdict, indexing=False, sim_ratio=0.8):
     correct_text = []
     text_ = []
     alpha = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
@@ -377,7 +377,7 @@ def update_resources(matchdict=True, unknown=False,  reset_matchdict=False):
 
 # Main function to correct text based on correction resources
 ## Set options to streamline workflow
-def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_ratio=75, add_matches=True, stats=True, nrule=True, print_unknown=False, indexing=False, lemmatize=False, tolist=False, progress=False):
+def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_ratio=0.8, add_matches=True, stats=True, nrule=True, print_unknown=False, indexing=False, lemmatize=False, tolist=False, progress=False):
 
     #Set alphabet for string pattern matching
     alpha = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
