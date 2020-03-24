@@ -569,6 +569,8 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
             doc_text.append(doc_word)
     # Add words not found to not_in_dict
     not_in_dict.update(not_found)
+    # Duplicate text_corr to avoid n-rule and lemmatize conflict
+    text_corr_ = text_corr
     # Call function to correct n-rule if set to True
     if nrule:
         text_corr, ncount = correct_nrule(text_corr, indexing)
@@ -582,6 +584,8 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
     totals["misses"] += miss_count
     # Lemmatize words if set to True
     if lemmatize:
+        if nrule:
+            text_corr = text_corr_
         text_corr = lemmatize_text(text_corr, lemdict, indexing, sim_ratio)
         if output == "json":
             # Add lemmas to doc_text
