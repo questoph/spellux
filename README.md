@@ -66,7 +66,7 @@ spellux.global_stats(text, reset=True)
 # Call the function on a new instance
 correct = spellux.normalize_text(text, exceptions=excs, mode='combo', sim_ratio=0.8,
           add_matches=True, stats=True, print_unknown=False, nrule=True, indexing=False,
-          lemmatize=False, tolist=False, progress=False)
+          lemmatize=False, output='string', progress=False)
 
 # Print the result of the correction
 print(correct)
@@ -96,7 +96,7 @@ The corrector function takes a couple of arguments to specify the processing and
 ```Python
 spellux.normalize_text(text, exceptions={}, mode='safe', sim_ratio=0.8, add_matches=True,
                        stats=True, print_unknown=False, nrule=True, indexing=False,
-                       lemmatize=False, tolist=False, progress=False)
+                       lemmatize=False, output="string", progress=False)
 ```
 
 ```Python
@@ -190,11 +190,15 @@ Parameter to reduce word forms to the lemma. This process is based on a lemma-in
 **Note:** This parameter does not interact well with the *n-rule* correction activated. But then again, why would you combine those two anyways?
 
 ```Python
-tolist=False/True
+output="string", "list", "json"
 ```
-*Default setting: False*
+*Default setting: "string"*
 
-With this option set to *True*, you can write the output of the correction process to a list of tokens instead of to a string.
+With this option, you can write the output of the correction process different formats. The following formats are available:
+
+- **'string':** The text is returned as a string.
+- **'list':** The text is returned as a list of tokens.
+- **'json':** The text ist returned as list of dictionaries that includes the *original form* of the word, the *corrected form* of the word, the *word index* to restore text shape, the *correction index* (if indexing is set to True).
 
 ```Python
 progress=False/True
@@ -293,7 +297,7 @@ I also want to try and replace the word embedding model with a character-based r
 
 ```Python:
 name='spellux',
-version='0.1.1',
+version='0.1.2',
 published='March 2020'
 description='Automatic text normalization for Luxembourgish',
 url='https://github.com/questoph/spellux',
