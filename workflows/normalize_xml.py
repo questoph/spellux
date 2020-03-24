@@ -35,7 +35,7 @@ for file in files:
     # Normalize each entry on word level
     for entry in pbar(root.findall('.//' + args.tag)).start():
         text = entry.text
-        corrected = spellux.normalize_text(text, mode="model", add_matches=True, sim_ratio=75, stats=False, print_unknown=False, nrule=False, indexing=False, lemmatize=False, tolist=False, progress=False)
+        corrected = spellux.normalize_text(text, mode="model", add_matches=True, sim_ratio=0.8, stats=False, print_unknown=False, nrule=False, indexing=False, lemmatize=False, output="string", progress=False)
         entry.set("corr", corrected)
 
     name = file[4:-4] + "_normalized"
