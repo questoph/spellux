@@ -64,7 +64,7 @@ text = "Eche hun d'Wort heut den Muaren mussen leesen."
 spellux.global_stats(text, reset=True)
 
 # Call the function on a new instance
-correct = spellux.normalize_text(text, exceptions=excs, mode='combo', sim_ratio=75,
+correct = spellux.normalize_text(text, exceptions=excs, mode='combo', sim_ratio=0.8,
           add_matches=True, stats=True, print_unknown=False, nrule=True, indexing=False,
           lemmatize=False, tolist=False, progress=False)
 
@@ -82,7 +82,7 @@ spellux.global_stats(text, reset=False, report=True)
 # Use lemmatize method outside the main correction routine
 # Note: this method takes a list of tokes as input, not a string
 tokens = ["Du", "hues", "Quatsch", "mat", "eise", "Sprooche", "gemaach", "."]
-lemmas = spellux.lemmatize_text(tokens, sim_ratio=75)
+lemmas = spellux.lemmatize_text(tokens, sim_ratio=0.8)
 print(lemmas)
 ["Du", "hunn", "Quatsch", "mat", "eis", "Sprooch", "maachen", "."]
 ```
@@ -94,7 +94,7 @@ Note: You can use the Jupyter notebook to test the package.
 The corrector function takes a couple of arguments to specify the processing and output options.
 
 ```Python
-spellux.normalize_text(text, exceptions={}, mode='safe', sim_ratio=75, add_matches=True,
+spellux.normalize_text(text, exceptions={}, mode='safe', sim_ratio=0.8, add_matches=True,
                        stats=True, print_unknown=False, nrule=True, indexing=False,
                        lemmatize=False, tolist=False, progress=False)
 ```
@@ -128,11 +128,11 @@ Specify the correction mode for processing:
 **Note:** There is an additional **training** mode that is only available internally for development and testing purposes. So don't bother activating it. Won't work.
 
 ```Python
-sim_ratio=0.75 # number between 0 and 1
+sim_ratio=0.8 # number between 0 and 1
 ```
-*Default setting: 0.75*
+*Default setting: 0.8*
 
-This setting specifies the similarity ratio for candidate correction to finetune correction – and reduce the number of clearly wrong candidates. During the evaluation of a candidate for the correction, the input string and the correction candidates are compared as for string similarity using the *fuzz.ratio()* process in *jellyfish*. If the similarity ratio lies below the defined threshold, the correction candidate is disregarded. This setting affects the correction modes *'model'/'norvig'/'tf-idf'/'combo'*.
+This setting specifies the similarity ratio for candidate correction to finetune correction – and reduce the number of clearly wrong candidates. During the evaluation of a candidate for the correction, the input string and the correction candidates are compared as for string similarity using the *Jaro-Winkler* method in *jellyfish* (see [here](https://www.geeksforgeeks.org/jaro-and-jaro-winkler-similarity/) for an explanation). If the similarity ratio lies below the defined threshold, the correction candidate is disregarded. This setting affects the correction modes *'model'/'norvig'/'tf-idf'/'combo'*.
 
 ```Python
 add_matches=False/True
@@ -219,9 +219,9 @@ This is the only obligatory argument. It specifies the input to process.
 **Note:** The input text has to be a list of tokens, not a string.
 
 ```Python
-sim_ratio=0.75 # number between 0 and 1
+sim_ratio=0.8 # Floating number between 0 and 1
 ```
-*Default setting: 0.75*
+*Default setting: 0.8*
 
 As for the correction routine, this setting specifies the similarity ratio for candidate correction to finetune lemmatization – and reduce the number of wrong candidates.
 
