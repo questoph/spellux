@@ -209,7 +209,7 @@ This option enables a progress bar for the correction process. This can be usefu
 The lemmatizer takes two arguments for reducing word forms to their lemma
 
 ```Python
-spellux.lemmatize_text(text, sim_ratio=0.75)
+spellux.lemmatize_text(text, sim_ratio=0.8)
 ```
 
 ```Python
