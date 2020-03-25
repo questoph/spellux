@@ -46,10 +46,13 @@ lemma_list = list(lemma_set)
 
 ## Lemma dictionary with variants for lemmatization
 print("- importing inflection dictionary")
-lemdict_relpath = "lemma_dict_pos.json"
+lemdict_relpath = "lemma_dict_pos_inv.txt"
 lemdict_filepath = os.path.join(thedir, data_dir, lemdict_relpath)
-lemdict_json = open(lemdict_filepath, "r", encoding="utf-8").read()
-lemdict = json.loads(lemdict_json)
+lemdict = {}
+with open(lemdict_filepath, "r", encoding="utf-8") as lem_file:
+    lemdata = csv.reader(lem_file, delimiter='\t')
+    for row in lemdata:
+        lemdict[row[0]] = eval(row[1])
 
 ## Word embedding model based on text data (articles, comments) from RTL.lu
 print("- importing word embedding model")
@@ -105,7 +108,7 @@ savedir = os.getcwd()
 unknown_relpath = "unknown_words.txt"
 unknown_filepath = os.path.join(savedir, unknown_relpath)
 
-print("\n All set. Let's go!")
+print("\nAll set. Let's go!")
 
 # Function to print global test statistics
 totals = {"words":0, "corrections":0, "misses":0}
@@ -241,24 +244,23 @@ def correct_nrule(text, indexing):
     context_y = ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "z"]
     # Set n correction counter
     ncorr_count = 0
-    # Copy of text without indices for index matching in indexing mode
+    # Copy of text without indices for index buffer creation
     text_ = []
     for token in text:
-        if token in string.punctuation:
-            text_.append(token)
-        else:
+        if token.endswith(("₀", "₁", "₂", "₃")):
             text_.append(token[:-1])
+        else:
+            text_.append(token)
     # Set index buffer for context look-up
     index_buffer = {}
-    # start correction routine
+    # Start correction routine
     for word in text:
         if indexing:
             text = text_
-            if word in string.punctuation:
-                index = ""
+            if word.endswith(("₀", "₁", "₂", "₃")):
+                index, word = word[-1], word[:-1]
             else:
-                index = word[-1]
-                word = word[:-1]
+                index = ""
         elif not indexing:
             index = ""
         # Create image of text with index position for every word
@@ -318,51 +320,40 @@ def correct_nrule(text, indexing):
 ### Based on the inflection for dictionary
 def lemmatize_text(text, lemdict, output, indexing=False, sim_ratio=0.8):
     correct_text = []
-    text_ = []
     alpha = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
     pattern = rf"^[{alpha}]([{alpha}'`-])*[{alpha}]?$"
-    for token in text:
-        if token in string.punctuation or re.match(pattern, token) is None:
-            text_.append(token)
-        else:
-            text_.append(token[:-1])
     # start correction routine
     for word in text:
         if indexing:
-            text = text_
-            if word in string.punctuation or re.match(pattern, token) is None:
-                index = ""
+            if word.endswith(("₀", "₁", "₂", "₃")):
+                index, word = word[-1], word[:-1]
             else:
-                index = word[-1]
-                word = word[:-1]
+                index = ""
         elif not indexing:
             index = ""
-        lem_cands = []
-        for k, v in lemdict.items():
-            if word in v["variants"]:
-                tup = (k, v["pos"])
-                lem_cands.append(tup)
-        # Replace word if 1 variant exists in correction dict
-        if len(lem_cands) == 0:
-            correct_text.append(word + index)
-        elif len(lem_cands) == 1:
-            cand = lem_cands[0][0]
-            correct_text.append(cand + index)
-        elif len(lem_cands) > 1:
-            pos_check = [lemtup[1] for lemtup in lem_cands]
-            # Map derived adjectives to original word type
-            if len(lem_cands) == 2 and "ADJ" in pos_check:
-                cand = "".join([lemtup[0] for lemtup in lem_cands if not lemtup[1] == "ADJ"])
+        if word in lemdict.keys():
+            # Check variant againt lemma candidates
+            lem_cands = lemdict[word]
+            if len(lem_cands) == 1:
+                cand = lem_cands[0][0]
                 correct_text.append(cand + index)
-            else:
-                # Extract likeliest candidate using fuzzy string matching
-                cands = [lemtup[0] for lemtup in lem_cands]
-                extract_cand = get_best_match(word, cands)
-                lem_cand = extract_cand[0]
-                if extract_cand[1] >= sim_ratio:
-                    correct_text.append(lem_cand + index)
+            elif len(lem_cands) > 1:
+                pos_check = [lemtup[1] for lemtup in lem_cands]
+                # Map derived adjectives to original word type
+                if len(lem_cands) == 2 and "ADJ" in pos_check:
+                    cand = "".join([lemtup[0] for lemtup in lem_cands if not lemtup[1] == "ADJ"])
+                    correct_text.append(cand + index)
                 else:
-                    correct_text.append(word + index)
+                    # Extract likeliest candidate using fuzzy string matching
+                    cands = [lemtup[0] for lemtup in lem_cands]
+                    extract_cand = get_best_match(word, cands)
+                    lem_cand = extract_cand[0]
+                    if extract_cand[1] >= sim_ratio:
+                        correct_text.append(lem_cand + index)
+                    else:
+                        correct_text.append(word + index)
+        else:
+            correct_text.append(word + index)
     return correct_text
 
 # Functions to save the updated matchdict and a list of unknown words to file
@@ -593,7 +584,10 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
     if stats:
         print("Number of words: {}" .format(str(word_count)))
         print("Number of new matches: {}" .format(str(len(match_dict) - match_count)))
-        print("Corrected items: {}" .format(str(corr_count)))
+        if nrule:
+            print("Number of corrections (with n-rule): {}" .format(str(corr_count)))
+        else:
+            print("Number of corrections: {}" .format(str(corr_count)))
         print("Items not found: {}" .format(str(miss_count)))
     # Print list of items not found if set to True
     if print_unknown:

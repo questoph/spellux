@@ -4,6 +4,7 @@
 
 - Replace "tolist" parameter in normalizer function with "output" parameter (string, list, json)
 - Output to json may include original word, correction, lemma, n-rule correction, correction index and text position index (depending on parameters)
+- Performance improvements for lemmatizer function
 - Add folder "workflows" to repository for example usage and application scripts
 - Bug fixes and code cleanup
 
