@@ -599,7 +599,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
         # Strip leading whitespaces for punctiation
         text_corr = re.sub(r'\s([?.,:;!"](?:\s|$))', r'\1', text_corr)
         # Trailing whitespaces for items of type "d'"
-        d_list = ["d' ", "D' ", "d` ", "D` "]
+        d_list = ["d' ", "D' ", "d` ", "D` ", "d’ ", "D’ "]
         for d in d_list:
             if d in text_corr:
                 text_corr = text_corr.replace(d, d.strip())
