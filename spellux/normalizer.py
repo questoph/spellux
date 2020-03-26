@@ -14,7 +14,6 @@ import jellyfish as jf
 from gensim.models import Word2Vec
 from spacy.lang.lb import Luxembourgish
 nlp = Luxembourgish()
-from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
 from progressbar import ProgressBar
