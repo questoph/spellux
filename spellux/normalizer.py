@@ -320,7 +320,7 @@ def correct_nrule(text, indexing):
 def lemmatize_text(text, lemdict, output, indexing=False, sim_ratio=0.8):
     correct_text = []
     alpha = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
-    pattern = rf"^[{alpha}]([{alpha}'`-])*[{alpha}]?$"
+    pattern = rf"^[{alpha}]([{alpha}'`’-])*[{alpha}]?$"
     # start correction routine
     for word in text:
         if indexing:
@@ -385,7 +385,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
 
     #Set alphabet for string pattern matching
     alpha = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
-    pattern = rf"^[{alpha}]([{alpha}'`-])*[{alpha}]?$"
+    pattern = rf"^[{alpha}]([{alpha}'`’-])*[{alpha}]?$"
 
     # Define set to collect unknown words
     not_found = set()
@@ -596,7 +596,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
         pass
     elif output is "string":
         text_corr = " ".join(text_corr)
-        # Strip leading whitespaces for punctiation
+        # Strip leading whitespaces for punctuation
         text_corr = re.sub(r'\s([?.,:;!"](?:\s|$))', r'\1', text_corr)
         # Trailing whitespaces for items of type "d'"
         d_list = ["d' ", "D' ", "d` ", "D` ", "d’ ", "D’ "]
