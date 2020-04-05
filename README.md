@@ -289,7 +289,7 @@ report=False/True
 
 Right now, the correction routine produces too many false positive and false negative corrections. Some of these can hardly be avoided using automatic word correction, i.e., due to the large amount of spelling variation in Luxembourgish and the high number of homographs this produces when checking against the lemma list. The correction resources and algorithms for candidate corrections need to be tested in detail and improved to reduce the number of false negative corrections.
 
-Another way of improving matching accuracy and candidate evaluation could be the integration of a POS and word-context (trigrams) look-up during correction. Since tokenization in spellux is done with *spaCy*, POS information easy to implement for the tokens to be corrected. Plus, the lemma list from spellchecker.lu does hold POS information. Both resources use slightly different POS annotation systems, though. These need to be harmonized to implement this resource.
+Another way of improving matching accuracy and candidate evaluation could be the integration of a POS and word-context (trigrams) look-up during correction. Since tokenization in spellux is done with *spaCy*, POS information should be easy to implement for the tokens to be corrected. Plus, the lemma list from spellchecker.lu does hold POS information. Both resources use slightly different POS annotation systems, though. These need to be harmonized to implement this resource.
 
 I also want to try and replace the word embedding model with a character-based representation of spelling variants using the **char2vec** approach (see [https://github.com/Lettria/Char2Vec](https://github.com/Lettria/Char2Vec)).
 
