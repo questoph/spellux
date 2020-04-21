@@ -1,4 +1,4 @@
-#-*- coding: UTF-8 -*-
+# -*- coding: UTF-8 -*-
 
 # Spellux is a package for the automatic correction of Luxembourgish texts
 # See https://github.com/questoph/spellux/ for the documentation
@@ -317,10 +317,8 @@ def correct_nrule(text, indexing):
 
 ## Function to reduce word forms to their lemma
 ### Based on the inflection for dictionary
-def lemmatize_text(text, lemdict, output, indexing=False, sim_ratio=0.8):
+def lemmatize_text(text, lemdict=lemdict, indexing=False, sim_ratio=0.8):
     correct_text = []
-    alpha = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
-    pattern = rf"^[{alpha}]([{alpha}'`’-])*[{alpha}]?$"
     # start correction routine
     for word in text:
         if indexing:
@@ -383,7 +381,7 @@ def update_resources(matchdict=True, unknown=False,  reset_matchdict=False):
 ## Set options to streamline workflow
 def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_ratio=0.8, add_matches=True, stats=True, nrule=True, print_unknown=False, indexing=False, lemmatize=False, output="string", progress=False):
 
-    #Set alphabet for string pattern matching
+    # Set alphabet for string pattern matching
     alpha = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
     pattern = rf"^[{alpha}]([{alpha}'`’-])*[{alpha}]?$"
 
@@ -567,7 +565,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
         text_corr, ncount = correct_nrule(text_corr, indexing)
         corr_count += ncount
         if output == "json":
-            # Add n-ruel corrections to doc_text
+            # Add n-rule corrections to doc_text
             add_to_doctext(text_corr, doc_text, pattern, indexing, label="n-rule")
     # Add counts to global stats
     totals["words"] += word_count
