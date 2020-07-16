@@ -82,8 +82,11 @@ spellux.global_stats(text, reset=False, report=True)
 # Use lemmatize method outside the main correction routine
 # Note: this method takes a list of tokes as input, not a string
 tokens = ["Du", "hues", "Quatsch", "mat", "eise", "Sprooche", "gemaach", "."]
+
 lemmas = spellux.lemmatize_text(tokens, sim_ratio=0.8)
+
 print(lemmas)
+
 ["Du", "hunn", "Quatsch", "mat", "eis", "Sprooch", "maachen", "."]
 ```
 
