@@ -134,13 +134,14 @@ def global_stats(corpus, totals=totals, reset=False, report=False):
 # Correction functions for fuzzy string matching
 ## Function to evaluate candiate for correction using word embedding model
 ### Use fuzzy string matching to evaluate candidate from 10 nearest neighbors
-def eval_emb_cand(word, sim_ratio):
+def eval_emb_cand(word, lemmaset, sim_ratio):
     emb_cands = set()
     # Determine embedding candidates in model
     try:
         sim_cands = model.wv.most_similar(positive=word, topn=10)
         for cand in sim_cands:
-            emb_cands.add(cand[0])
+            if cand in lemma_set:
+                emb_cands.add(cand[0])
         # Evaluate correction candidate using fuzzy string matching
         fuzz_cand = get_best_match(word, emb_cands)
         emb_cand = fuzz_cand[0]
@@ -166,8 +167,8 @@ def eval_lem_cand(word, lemmalist, sim_ratio):
         return word
 
 ## Function to evaluate candiatate based on combination of other methods
-def eval_combo_cand(word, lemmalist, sim_ratio):
-    train_cands = [eval_emb_cand(word, sim_ratio), correct_text(word, sim_ratio), eval_lem_cand(word, lemmalist, sim_ratio)]
+def eval_combo_cand(word, lemmalist, lemmaset, sim_ratio):
+    train_cands = [eval_emb_cand(word, lemma_set, sim_ratio), correct_text(word, sim_ratio), eval_lem_cand(word, lemmalist, sim_ratio)]
     counts = Counter(train_cands)
     maxval = max(counts.values())
     if maxval >= 2:
@@ -507,7 +508,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
             else:
                 if mode == "model":
                     # Evaluate correction candidate using word embedding model
-                    deamb = eval_emb_cand(word, sim_ratio)
+                    deamb = eval_emb_cand(word, lemma_set, sim_ratio)
                 elif mode == "norvig":
                     # Evaluate correction candidate using norvig corrector
                     deamb = correct_text(word, sim_ratio)
@@ -516,7 +517,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
                     deamb = eval_lem_cand(word, lemma_list, sim_ratio)
                 elif mode == "combo":
                     # Evaluate correction candidate using all three resources
-                    deamb = eval_combo_cand(word, lemma_list, sim_ratio)
+                    deamb = eval_combo_cand(word, lemma_list, lemma_set, sim_ratio)
                 elif mode == "training":
                     # Evaluate correction candidate using word variant/frequency dict
                     try:

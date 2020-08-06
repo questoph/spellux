@@ -73,7 +73,7 @@ print(correct)
 "Ech hu d'Wuert haut de Muere musse liesen."
 
 # Save the updated matching dict and a list of unknown words to file
-spellux.update_resources(matchdict=True, unknown=False, reset_matches=False)
+spellux.update_resources(matchdict=True, unknown=False, reset_matchdict=False)
 
 # Print global correction statistics after correction
 # The report parameter triggers a print out report
@@ -238,7 +238,7 @@ As for the correction routine, this setting specifies the similarity ratio for c
 The update function takes three arguments to specify the resources to update.
 
 ```Python
-spellux.update_resources(matchdict=True, unknown=False, reset_matches=False)
+spellux.update_resources(matchdict=True, unknown=False, reset_matchdict=False)
 ```
 
 ```Python
@@ -256,7 +256,7 @@ unknown=False/True
 Option to save the list of words not found during the correction process to a text file in your working directory.
 
 ```Python
-reset_matches=False/True
+reset_matchdict=False/True
 ```
 *Default setting: False*
 
@@ -300,8 +300,8 @@ I also want to try and replace the word embedding model with a character-based r
 
 ```Python:
 name='spellux',
-version='0.1.2',
-published='March 2020'
+version='0.1.3',
+published='first published in March 2020; last updated (0.1.3) in August 2020'
 description='Automatic text normalization for Luxembourgish',
 url='https://github.com/questoph/spellux',
 author='Christoph Purschke',
