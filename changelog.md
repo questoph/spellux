@@ -1,5 +1,14 @@
 ## Changelog
 
+### v0.1.4 [09.08.2020]
+
+- Add option "remove_stopwords" to remove stop words from text during correction
+
+### v0.1.3 [06.08.2020]
+
+- Add function to check correction candidates determined with the word embedding model against the lemma list
+- Add new pretrained matching dict based on the improed embedding model routine
+
 ### v0.1.2 [25.03.2020]
 
 - Replace "tolist" parameter in normalizer function with "output" parameter (string, list, json)

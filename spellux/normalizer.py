@@ -53,6 +53,12 @@ with open(lemdict_filepath, "r", encoding="utf-8") as lem_file:
     for row in lemdata:
         lemdict[row[0]] = eval(row[1])
 
+### List of words ending in n to whom the n-rule does not apply
+print("- importing stopwords")
+stop_relpath = "stopwords.txt"
+stop_filepath = os.path.join(thedir, data_dir, stop_relpath)
+stop_words = set(line.strip() for line in open(stop_filepath, encoding="utf-8"))
+
 ## Word embedding model based on text data (articles, comments) from RTL.lu
 print("- importing word embedding model")
 model_relpath = "rtl_data_case_model_dim200_win5_iter5_count25.bin"
@@ -110,7 +116,7 @@ unknown_filepath = os.path.join(savedir, unknown_relpath)
 print("\nAll set. Let's go!")
 
 # Function to print global test statistics
-totals = {"words":0, "corrections":0, "misses":0}
+totals = {"words":0, "corrections":0, "misses":0, "stopwords":0}
 
 def global_stats(corpus, totals=totals, reset=False, report=False):
     if isinstance(corpus, list):
@@ -124,7 +130,11 @@ def global_stats(corpus, totals=totals, reset=False, report=False):
         if report:
             print("Correction statistics:\n")
             print("- Number of texts: {}" .format(str(texts)))
-            print("- Number of words: {}" .format(str(totals["words"])))
+            if stopwords:
+                print("- Number of words (without stopwords): {}" .format(str(totals["words"] -  totals["stopwords"])))
+                print("- Number of stop words removed: {}" .format(str(totals["stopwords"])))
+            else:
+                print("- Number of words: {}" .format(str(totals["words"])))
             print("- Corrected items: {}" .format(str(totals["corrections"])))
             print("- Items not found: {}" .format(str(totals["misses"])))
         else:
@@ -317,7 +327,7 @@ def correct_nrule(text, indexing):
     return correct_text, ncorr_count
 
 ## Function to reduce word forms to their lemma
-### Based on the inflection for dictionary
+### Based on the inflection form dictionary
 def lemmatize_text(text, lemdict=lemdict, indexing=False, sim_ratio=0.8):
     correct_text = []
     # start correction routine
@@ -380,7 +390,7 @@ def update_resources(matchdict=True, unknown=False,  reset_matchdict=False):
 
 # Main function to correct text based on correction resources
 ## Set options to streamline workflow
-def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_ratio=0.8, add_matches=True, stats=True, nrule=True, print_unknown=False, indexing=False, lemmatize=False, output="string", progress=False):
+def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_ratio=0.8, add_matches=True, stats=True, nrule=True, print_unknown=False, indexing=False, lemmatize=False, stopwords=False, output="string", progress=False):
 
     # Set alphabet for string pattern matching
     alpha = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
@@ -390,7 +400,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
     not_found = set()
 
     # Set counters for stats
-    word_count, corr_count, miss_count = 0, 0, 0
+    word_count, corr_count, miss_count, stop_count = 0, 0, 0, 0
 
     # Include exception dict in matching dict
     if len(exceptions) > 0:
@@ -427,6 +437,11 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
             word_id +=1
             doc_word["id"] = word_id
             doc_word["original"] = word
+        if stopwords:
+            # Remove stop words if option set to True
+            if word in stop_words:
+                stop_count +=1
+                continue
         if word in string.punctuation:
             # Keep punctuation unchanged
             text_corr.append(word)
@@ -572,6 +587,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
     totals["words"] += word_count
     totals["corrections"] += corr_count
     totals["misses"] += miss_count
+    totals["stopwords"] += stop_count
     # Lemmatize words if set to True
     if lemmatize:
         text_corr = lemmatize_text(text_corr_, lemdict, indexing, sim_ratio)
@@ -580,7 +596,11 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
             add_to_doctext(text_corr, doc_text, pattern, indexing, label="lemma")
     # Print statistics if set to True
     if stats:
-        print("Number of words: {}" .format(str(word_count)))
+        if stopwords:
+            print("Number of words (without stopwords): {}" .format(str(word_count - stop_count)))
+            print("Number of stop words removed: {}" .format(str(stop_count)))
+        else:
+            print("Number of words: {}" .format(str(word_count)))
         print("Number of new matches: {}" .format(str(len(match_dict) - match_count)))
         if nrule:
             print("Number of corrections (with n-rule): {}" .format(str(corr_count)))

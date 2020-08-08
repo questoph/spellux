@@ -66,13 +66,13 @@ spellux.global_stats(text, reset=True)
 # Call the function on a new instance
 correct = spellux.normalize_text(text, exceptions=excs, mode='combo', sim_ratio=0.8,
           add_matches=True, stats=True, print_unknown=False, nrule=True, indexing=False,
-          lemmatize=False, output='string', progress=False)
+          lemmatize=False, stopwords=False, output='string', progress=False)
 
 # Print the result of the correction
 print(correct)
 "Ech hu d'Wuert haut de Muere musse liesen."
 
-# Save the updated matching dict and a list of unknown words to file
+# Save the updated matching dict, and a list of unknown words to a text file
 spellux.update_resources(matchdict=True, unknown=False, reset_matchdict=False)
 
 # Print global correction statistics after correction
@@ -80,7 +80,7 @@ spellux.update_resources(matchdict=True, unknown=False, reset_matchdict=False)
 spellux.global_stats(text, reset=False, report=True)
 
 # Use lemmatize method outside the main correction routine
-# Note: this method takes a list of tokes as input, not a string
+# Note: this method takes a list of tokens as input, not a string
 tokens = ["Du", "hues", "Quatsch", "mat", "eise", "Sprooche", "gemaach", "."]
 
 lemmas = spellux.lemmatize_text(tokens, sim_ratio=0.8)
@@ -99,7 +99,7 @@ The corrector function takes a couple of arguments to specify the processing and
 ```Python
 spellux.normalize_text(text, exceptions={}, mode='safe', sim_ratio=0.8, add_matches=True,
                        stats=True, print_unknown=False, nrule=True, indexing=False,
-                       lemmatize=False, output="string", progress=False)
+                       lemmatize=False, stopwords=False, output="string", progress=False)
 ```
 
 ```Python
@@ -131,7 +131,7 @@ Specify the correction mode for processing:
 **Note:** There is an additional **training** mode that is only available internally for development and testing purposes. So don't bother activating it. Won't work.
 
 ```Python
-sim_ratio=0.8 # number between 0 and 1
+sim_ratio=0.8 # floating number between 0 and 1
 ```
 *Default setting: 0.8*
 
@@ -191,6 +191,13 @@ lemmatize=False/True
 
 Parameter to reduce word forms to the lemma. This process is based on a lemma-inflection form dictionary and only works for words in the variant list at the moment.
 **Note:** This parameter does not interact well with the *n-rule* correction activated. But then again, why would you combine those two anyways?
+
+```Python
+stopwords=False/True
+```
+*Default setting: False*
+
+Parameter to remove frequent function words from the text, for example, when preparing texts for the training of word embedding models.
 
 ```Python
 output="string", "list", "json"
@@ -300,8 +307,8 @@ I also want to try and replace the word embedding model with a character-based r
 
 ```Python:
 name='spellux',
-version='0.1.3',
-published='first published in March 2020; last updated (0.1.3) in August 2020'
+version='0.1.4',
+published='first published in March 2020; last updated (0.1.4) in August 2020'
 description='Automatic text normalization for Luxembourgish',
 url='https://github.com/questoph/spellux',
 author='Christoph Purschke',

@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='spellux',
-      version='0.1.2',
+      version='0.1.4',
       description='Automatic text normalization for Luxembourgish',
       url='https://github.com/questoph/spellux',
       author='Christoph Purschke',
