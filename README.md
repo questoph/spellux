@@ -274,7 +274,7 @@ Option to reset the matching dictionary. This can be useful if you notice a lot 
 The global stats method takes one obligatory argument, the corpus to be counted, and two conditional arguments: the reset parameter to *reset* the counters to zero and the *report* parameter that triggers a print out report of the stats.
 
 ```Python
-spellux.global_stats(corpus, reset=False, report=False)
+spellux.global_stats(corpus, reset=False, stopwords=False, report=False)
 ```
 ```Python
 corpus
@@ -287,6 +287,13 @@ reset=False/True
 *Default setting: False*
 
 Option to reset global statistics. Use this parameter at the beginning of a correction session/loop to reset the counters.
+
+```Python
+stopwords=False/True
+```
+*Default setting: False*
+
+Set this to *True* to report the number of stop words removed from the text during correction and adjust the number of words total accordingly.
 
 ```Python
 report=False/True

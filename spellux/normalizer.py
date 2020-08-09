@@ -118,13 +118,13 @@ print("\nAll set. Let's go!")
 # Function to print global test statistics
 totals = {"words":0, "corrections":0, "misses":0, "stopwords":0}
 
-def global_stats(corpus, totals=totals, reset=False, report=False):
+def global_stats(corpus, totals=totals, reset=False, stopwords=False, report=False):
     if isinstance(corpus, list):
         texts = len(corpus)
     elif isinstance(corpus, str):
         texts = 1
     if reset:
-        totals["words"], totals["corrections"], totals["misses"] = 0, 0, 0
+        totals["words"], totals["corrections"], totals["misses"], totals["stopwords"] = 0, 0, 0, 0
         print("Global stats have been set to zero!")
     else:
         if report:
