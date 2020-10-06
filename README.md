@@ -314,9 +314,8 @@ I also want to try and replace the word embedding model with a character-based r
 
 For a detailed description of logic behind the *spellux* package and a first application see the following reference paper:
 
-```Python:
-Purschke, Christoph (2020): Attitudes towards multilingualism in Luxembourg. A comparative analysis of online news comments and crowdsourced questionnaire data. Special collection „Computational Sociolinguistics“ in *Frontiers in Artificial Intelligence*, *Language and Computation*, ed. by Jack Grieve et al. doi: [https://doi.org/10.3389/frai.2020.536086](10.3389/frai.2020.536086)
-```
+Purschke, Christoph (2020): **Attitudes towards multilingualism in Luxembourg. A comparative analysis of online news comments and crowdsourced questionnaire data.** Special collection „Computational Sociolinguistics“ in *Frontiers in Artificial Intelligence*, *Language and Computation*, ed. by Jack Grieve et al. doi: [https://doi.org/10.3389/frai.2020.536086](10.3389/frai.2020.536086)
+
 
 ### Package info
 
