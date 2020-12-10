@@ -91,10 +91,10 @@ nbrs = NearestNeighbors(n_neighbors=1, n_jobs=-1).fit(tfidf)
 
 ## Variant/frequency dictionary based on data from spellchecker.lu.
 ### Only available for internal training purposes
-corrdict_relpath = "correction_dict_extended.json"
-corrdict_filepath = os.path.join(thedir, data_dir, corrdict_relpath)
-with open(corrdict_filepath, encoding="utf-8") as corr_file:
-    try:
+try:
+    corrdict_relpath = "correction_dict_extended.json"
+    corrdict_filepath = os.path.join(thedir, data_dir, corrdict_relpath)
+    with open(corrdict_filepath, encoding="utf-8") as corr_file:
         corr_dict = json.load(corr_file)
         print("- importing variant/frequency dictionary")
 
@@ -104,8 +104,8 @@ with open(corrdict_filepath, encoding="utf-8") as corr_file:
         for lemma, entry in corr_dict.items():
             lemvar_dict[lemma] = set(entry["vars"])
             lemma_freq[lemma] = entry["freq"]
-    except:
-        pass
+except:
+    pass
 
 # Define list to collect unknown words
 not_in_dict = set()
