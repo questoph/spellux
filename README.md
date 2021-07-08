@@ -70,7 +70,7 @@ correct = spellux.normalize_text(text, exceptions=excs, mode='combo', sim_ratio=
 
 # Print the result of the correction
 print(correct)
-"Ech hu d'Wuert haut de Muere musse liesen."
+"Ech hunn d'Wuert haut de Muere musse liesen."
 
 # Save the updated matching dict, and a list of unknown words to a text file
 spellux.update_resources(matchdict=True, unknown=False, reset_matchdict=False)
