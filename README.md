@@ -27,7 +27,7 @@ For now, you can download the repo to your hard disk. In Terminal, go to the top
 pip install .
 ```
 
-The package will be added to your local Python installation.
+The package will be added to your local [Python](https://www.scaler.com/topics/what-is-pip-in-python/) installation.
 
 In order to prepare your system for working with spellux, run the following command to install all required dependencies:
 
