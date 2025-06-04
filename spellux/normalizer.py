@@ -223,7 +223,7 @@ def get_best_match(word, cands):
     best_match = None
     highest_sim = 0
     for cand in cands:
-        score = jf.jaro_winkler(word, cand)
+        score = jf.jaro_winkler_similarity(word, cand)
         if(score > highest_sim):
             highest_sim = score
             best_match = "".join(cand)
