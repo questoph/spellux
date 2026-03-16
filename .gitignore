@@ -8,3 +8,6 @@ spellux/data/tfidf_cache.pkl
 
 # Internal planning docs
 TECHNICAL_IMPROVEMENT_PLAN.md
+
+# Tests (work in progress)
+tests/

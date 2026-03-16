@@ -1,5 +1,14 @@
 ## Changelog
 
+### v0.1.7 [16.03.2026]
+
+- Raise minimum dependency versions to reflect tested-compatible releases
+- Replace abandoned `progressbar` package with maintained fork `progressbar2>=4.0.0`
+- Raise `gensim` floor to `>=4.0.0`
+- Raise `spacy` floor to `>=3.0.0`
+- Raise `scikit-learn` floor to `>=1.0.0`
+- Raise minimum Python version from `>=3.6` to `>=3.9`
+
 ### v0.1.6 [16.03.2026]
 
 - Pre-pickle TF-IDF vectorizer and KNN index to avoid re-fitting on every import

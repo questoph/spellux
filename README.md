@@ -324,8 +324,8 @@ Purschke, Christoph (2020): **Attitudes towards multilingualism in Luxembourg. A
 
 ```Python:
 name='spellux',
-version='0.1.6',
-published='first published in March 2020; last updated (0.1.6) in March 2026'
+version='0.1.7',
+published='first published in March 2020; last updated (0.1.7) in March 2026'
 description='Automatic text normalization for Luxembourgish',
 url='https://github.com/questoph/spellux',
 author='Christoph Purschke',
