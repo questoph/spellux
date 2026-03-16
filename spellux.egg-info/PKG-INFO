@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: spellux
+Version: 0.1.4
+Summary: Automatic text normalization for Luxembourgish
+Home-page: https://github.com/questoph/spellux
+Author: Christoph Purschke
+Author-email: christoph@purschke.info
+License: MIT
+Requires-Python: >=3.6
+License-File: LICENSE

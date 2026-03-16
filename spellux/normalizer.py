@@ -5,6 +5,7 @@
 
 import re
 import os
+import ast
 import csv
 import string
 import json
@@ -51,7 +52,7 @@ lemdict = {}
 with open(lemdict_filepath, "r", encoding="utf-8") as lem_file:
     lemdata = csv.reader(lem_file, delimiter='\t')
     for row in lemdata:
-        lemdict[row[0]] = eval(row[1])
+        lemdict[row[0]] = ast.literal_eval(row[1])
 
 ### List of words ending in n to whom the n-rule does not apply
 print("- importing stopwords")
@@ -104,7 +105,7 @@ try:
         for lemma, entry in corr_dict.items():
             lemvar_dict[lemma] = set(entry["vars"])
             lemma_freq[lemma] = entry["freq"]
-except:
+except Exception:
     pass
 
 # Define list to collect unknown words
@@ -390,11 +391,13 @@ def update_resources(matchdict=True, unknown=False,  reset_matchdict=False):
 
 # Main function to correct text based on correction resources
 ## Set options to streamline workflow
-def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_ratio=0.8, add_matches=True, stats=True, nrule=True, print_unknown=False, indexing=False, lemmatize=False, stopwords=False, output="string", progress=False):
+def normalize_text(text, matchdict=match_dict, exceptions=None, mode="safe", sim_ratio=0.8, add_matches=True, stats=True, nrule=True, print_unknown=False, indexing=False, lemmatize=False, stopwords=False, output="string", progress=False):
+    if exceptions is None:
+        exceptions = {}
 
     # Set alphabet for string pattern matching
     alpha = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
-    pattern = rf"^[{alpha}]([{alpha}'`’-])*[{alpha}]?$"
+    pattern = rf"^[{alpha}]([{alpha}’`’-])*[{alpha}]?$"
 
     # Define set to collect unknown words
     not_found = set()
@@ -537,7 +540,7 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
                     # Evaluate correction candidate using word variant/frequency dict
                     try:
                         deamb = eval_varfreq_cand(word, lemvar_dict, lemma_freq)
-                    except:
+                    except Exception:
                         print("Mode 'training' not available. Please use another mode.")
                         break
                 else:
@@ -611,17 +614,17 @@ def normalize_text(text, matchdict=match_dict, exceptions={}, mode="safe", sim_r
     if print_unknown:
         print(list(not_found))
     # Print list of corrected tokens (True) or re-join text to string
-    if output is "list":
+    if output == "list":
         pass
-    elif output is "string":
+    elif output == "string":
         text_corr = " ".join(text_corr)
         # Strip leading whitespaces for punctuation
-        text_corr = re.sub(r'\s([?.,:;!"](?:\s|$))', r'\1', text_corr)
-        # Trailing whitespaces for items of type "d'"
-        d_list = ["d' ", "D' ", "d` ", "D` ", "d’ ", "D’ "]
+        text_corr = re.sub(r’\s([?.,:;!"](?:\s|$))’, r’\1’, text_corr)
+        # Trailing whitespaces for items of type "d’"
+        d_list = ["d’ ", "D’ ", "d` ", "D` ", "d’ ", "D’ "]
         for d in d_list:
             if d in text_corr:
                 text_corr = text_corr.replace(d, d.strip())
-    elif output is "json":
+    elif output == "json":
         text_corr = doc_text
     return text_corr

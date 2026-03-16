@@ -4,3 +4,6 @@ spellux/data/correction_dict_extended.json
 
 # OSX
 .DS_Store
+
+# Internal planning docs
+TECHNICAL_IMPROVEMENT_PLAN.md

@@ -1,5 +1,14 @@
 ## Changelog
 
+### v0.1.5 [16.03.2026]
+
+- Fix syntax error in requirements.txt (duplicate `>=` operator for jellyfish dependency)
+- Replace unsafe `eval()` with `ast.literal_eval()` when loading inflection dictionary
+- Fix incorrect use of `is` instead of `==` for string comparison in output format check
+- Replace bare `except` clauses with `except Exception` to avoid swallowing system signals
+- Fix mutable default argument `exceptions={}` in `normalize_text` to prevent state leakage between calls
+- Remove unused `import math` from norvig_corrector
+
 ### v0.1.4 [09.08.2020]
 
 - Add option "remove_stopwords" to remove stop words from text during correction
