@@ -1,6 +1,7 @@
 
 spellux/data/.DS_Store
 spellux/data/correction_dict_extended.json
+spellux/data/tfidf_cache.pkl
 
 # OSX
 .DS_Store

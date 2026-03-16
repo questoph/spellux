@@ -9,8 +9,10 @@ import ast
 import csv
 import string
 import json
+import pickle
 import operator
 from collections import Counter
+from functools import lru_cache
 import jellyfish as jf
 from gensim.models import Word2Vec
 from spacy.lang.lb import Luxembourgish
@@ -22,6 +24,10 @@ pbar = ProgressBar()
 
 thedir = os.path.dirname(__file__)
 data_dir = "data"
+
+_ALPHA = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
+_WORD_RE = re.compile(rf"^[{_ALPHA}]([{_ALPHA}'`'-])*[{_ALPHA}]?$")
+_MAX_UNKNOWN_CACHE = 50_000
 
 from .norvig_corrector import correct_text
 
@@ -85,10 +91,17 @@ def ngrams(string, n=2):
     ngrams = zip(*[string[i:] for i in range(n)])
     return [''.join(ngram) for ngram in ngrams]
 
-print("- creating TF-IDF matrix")
-vectorizer = TfidfVectorizer(min_df=1, analyzer=ngrams, lowercase=False)
-tfidf = vectorizer.fit_transform(lemma_set)
-nbrs = NearestNeighbors(n_neighbors=1, n_jobs=-1).fit(tfidf)
+print("- building TF-IDF matrix")
+tfidf_cache_path = os.path.join(thedir, data_dir, "tfidf_cache.pkl")
+if os.path.exists(tfidf_cache_path):
+    with open(tfidf_cache_path, "rb") as f:
+        vectorizer, nbrs = pickle.load(f)
+else:
+    vectorizer = TfidfVectorizer(min_df=1, analyzer=ngrams, lowercase=False)
+    tfidf = vectorizer.fit_transform(lemma_set)
+    nbrs = NearestNeighbors(n_neighbors=1, n_jobs=-1).fit(tfidf)
+    with open(tfidf_cache_path, "wb") as f:
+        pickle.dump((vectorizer, nbrs), f)
 
 ## Variant/frequency dictionary based on data from spellchecker.lu.
 ### Only available for internal training purposes
@@ -145,15 +158,14 @@ def global_stats(corpus, totals=totals, reset=False, stopwords=False, report=Fal
 # Correction functions for fuzzy string matching
 ## Function to evaluate candiate for correction using word embedding model
 ### Use fuzzy string matching to evaluate candidate from 10 nearest neighbors
-def eval_emb_cand(word, lemmaset, sim_ratio):
+@lru_cache(maxsize=4096)
+def _eval_emb_cached(word, sim_ratio):
     emb_cands = set()
-    # Determine embedding candidates in model
     try:
         sim_cands = model.wv.most_similar(positive=word, topn=10)
         for cand in sim_cands:
             if cand in lemma_set:
                 emb_cands.add(cand[0])
-        # Evaluate correction candidate using fuzzy string matching
         fuzz_cand = get_best_match(word, emb_cands)
         emb_cand = fuzz_cand[0]
         if fuzz_cand[1] >= sim_ratio:
@@ -162,6 +174,9 @@ def eval_emb_cand(word, lemmaset, sim_ratio):
             return word
     except KeyError:
         return word
+
+def eval_emb_cand(word, lemmaset, sim_ratio):
+    return _eval_emb_cached(word, sim_ratio)
 
 ## Function to evaluate the K nearest neighbors using TF-IDF
 def eval_lem_cand(word, lemmalist, sim_ratio):
@@ -238,7 +253,7 @@ def add_to_doctext(text, doctext, pattern, indexing, label):
         for worddoc in doctext:
             if worddoc["id"] == wordpos:
                 if indexing:
-                    if not word in string.punctuation or re.match(pattern, word) is not None:
+                    if not word in string.punctuation or pattern.match(word) is not None:
                         worddoc[label] = word[:-1]
                 else:
                     worddoc[label] = word
@@ -255,32 +270,18 @@ def correct_nrule(text, indexing):
     context_y = ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "z"]
     # Set n correction counter
     ncorr_count = 0
-    # Copy of text without indices for index buffer creation
-    text_ = []
-    for token in text:
-        if token.endswith(("₀", "₁", "₂", "₃")):
-            text_.append(token[:-1])
-        else:
-            text_.append(token)
-    # Set index buffer for context look-up
-    index_buffer = {}
+    # Strip index markers for O(1) context lookup by position
+    text_ = [token[:-1] if token.endswith(("₀", "₁", "₂", "₃")) else token for token in text]
     # Start correction routine
-    for word in text:
+    for i, raw_word in enumerate(text):
         if indexing:
-            text = text_
-            if word.endswith(("₀", "₁", "₂", "₃")):
-                index, word = word[-1], word[:-1]
+            if raw_word.endswith(("₀", "₁", "₂", "₃")):
+                index, word = raw_word[-1], raw_word[:-1]
             else:
-                index = ""
-        elif not indexing:
-            index = ""
-        # Create image of text with index position for every word
-        buff = 0
-        if word in index_buffer:
-            buff = index_buffer[word] +1
-        lem_index = text.index(word, buff)
-        context_right = "".join(text[lem_index+1:lem_index+2])
-        index_buffer[word] = lem_index
+                index, word = "", raw_word
+        else:
+            index, word = "", raw_word
+        context_right = text_[i + 1] if i + 1 < len(text_) else ""
         if word in string.punctuation:
             correct_text.append(word)
         elif word[-2:] == "nn":
@@ -395,10 +396,6 @@ def normalize_text(text, matchdict=match_dict, exceptions=None, mode="safe", sim
     if exceptions is None:
         exceptions = {}
 
-    # Set alphabet for string pattern matching
-    alpha = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
-    pattern = rf"^[{alpha}]([{alpha}’`’-])*[{alpha}]?$"
-
     # Define set to collect unknown words
     not_found = set()
 
@@ -451,7 +448,7 @@ def normalize_text(text, matchdict=match_dict, exceptions=None, mode="safe", sim
             word_count -=1
             if output == "json":
                 doc_word["correction"] = word
-        elif re.match(pattern, word) is None:
+        elif _WORD_RE.match(word) is None:
             # Keep non-alphabetic words & special characters unchanged
             text_corr.append(word)
             word_count -=1
@@ -574,8 +571,9 @@ def normalize_text(text, matchdict=match_dict, exceptions=None, mode="safe", sim
                         doc_word["correction"] = deamb
         if output == "json":
             doc_text.append(doc_word)
-    # Add words not found to not_in_dict
-    not_in_dict.update(not_found)
+    # Add words not found to not_in_dict (bounded to avoid unbounded growth)
+    if len(not_in_dict) < _MAX_UNKNOWN_CACHE:
+        not_in_dict.update(not_found)
     # Duplicate text_corr to avoid n-rule and lemmatize conflict
     if lemmatize:
         text_corr_ = text_corr
@@ -585,7 +583,7 @@ def normalize_text(text, matchdict=match_dict, exceptions=None, mode="safe", sim
         corr_count += ncount
         if output == "json":
             # Add n-rule corrections to doc_text
-            add_to_doctext(text_corr, doc_text, pattern, indexing, label="n-rule")
+            add_to_doctext(text_corr, doc_text, _WORD_RE, indexing, label="n-rule")
     # Add counts to global stats
     totals["words"] += word_count
     totals["corrections"] += corr_count
@@ -596,7 +594,7 @@ def normalize_text(text, matchdict=match_dict, exceptions=None, mode="safe", sim
         text_corr = lemmatize_text(text_corr_, lemdict, indexing, sim_ratio)
         if output == "json":
             # Add lemmas to doc_text
-            add_to_doctext(text_corr, doc_text, pattern, indexing, label="lemma")
+            add_to_doctext(text_corr, doc_text, _WORD_RE, indexing, label="lemma")
     # Print statistics if set to True
     if stats:
         if stopwords:

@@ -18,6 +18,8 @@ from collections import Counter
 thedir = os.path.dirname(__file__)
 data_dir = "data"
 
+_WORD_RE = re.compile("[a-zA-Z-ëäöüéêèûîâÄÖÜËÉ'`'-]+")
+
 # Additional function to evaluate the best similiarity match using jellyfish
 def get_best_match(word, cands):
     if isinstance(cands, str) == True:
@@ -31,7 +33,7 @@ def get_best_match(word, cands):
             best_match = "".join(cand)
     return best_match, highest_sim
 
-def words(text): return re.findall("[a-zA-Z-ëäöüéêèûîâÄÖÜËÉ'`’-]+", text)
+def words(text): return _WORD_RE.findall(text)
 
 text_relpath = "rtl_news_articles_clean_puretext3.txt"
 text_filepath = os.path.join(thedir, data_dir, text_relpath)
@@ -69,7 +71,7 @@ def edits2(word):
 
 def correct_text(text, sim_ratio):
     #Correct all the words within a text, returning the corrected text.
-    corr_cand = re.sub("[a-zA-Z-ëäöüéêèûîâÄÖÜËÉ'`’-]+", correct_match, text)
+    corr_cand = _WORD_RE.sub(correct_match, text)
     corr_sim = get_best_match(text, corr_cand)
     if corr_sim[1] >= sim_ratio:
         return corr_cand

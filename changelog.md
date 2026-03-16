@@ -1,5 +1,13 @@
 ## Changelog
 
+### v0.1.6 [16.03.2026]
+
+- Pre-pickle TF-IDF vectorizer and KNN index to avoid re-fitting on every import
+- Fix O(n²) position lookup in n-rule correction by replacing index buffer with `enumerate`
+- Pre-compile word-matching regex patterns at module level in normalizer and norvig_corrector
+- Add LRU cache (4096 entries) for Word2Vec embedding lookups to avoid redundant model queries
+- Cap `not_in_dict` at 50 000 entries to prevent unbounded memory growth
+
 ### v0.1.5 [16.03.2026]
 
 - Fix syntax error in requirements.txt (duplicate `>=` operator for jellyfish dependency)

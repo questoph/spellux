@@ -302,13 +302,16 @@ report=False/True
 
  If set to *True*, the method returns a print version of the correction statistics. If set to *False*, the method returns a list of tuples.
 
-### State of affairs & roadmap
+### Known limitations & future directions
 
-Right now, the correction routine produces too many false positive and false negative corrections. Some of these can hardly be avoided using automatic word correction, i.e., due to the large amount of spelling variation in Luxembourgish and the high number of homographs this produces when checking against the lemma list. The correction resources and algorithms for candidate corrections need to be tested in detail and improved to reduce the number of false negative corrections.
+The correction routine still produces **false positive** corrections (variants that match a lemma with a different meaning) and **false negative** corrections (wrong matches via string similarity). Some of these are difficult to avoid given the large amount of orthographic variation in Luxembourgish and the resulting homograph density. The correction resources and candidate evaluation algorithms need further testing and refinement to reduce both error types.
 
-Another way of improving matching accuracy and candidate evaluation could be the integration of a POS and word-context (trigrams) look-up during correction. Since tokenization in spellux is done with *spaCy*, POS information should be easy to implement for the tokens to be corrected. Plus, the lemma list from spellchecker.lu does hold POS information. Both resources use slightly different POS annotation systems, though. These need to be harmonized to implement this resource.
+Planned directions for improving correction accuracy include:
 
-I also want to try and replace the word embedding model with a character-based representation of spelling variants using the **char2vec** approach (see [https://github.com/Lettria/Char2Vec](https://github.com/Lettria/Char2Vec)).
+- **POS and trigram context:** Integrating part-of-speech and word-context lookups during correction. Since spellux uses *spaCy* for tokenisation, POS information is accessible. The lemma list from spellchecker.lu also carries POS tags, but the two systems use different annotation schemes that would need to be harmonised first.
+- **Character-based embeddings:** Replacing the current word embedding model with a character-level representation of spelling variants (e.g., using a char2vec approach), which may generalise better to unseen variants.
+
+For technical improvements and code quality changes, see the [changelog](changelog.md).
 
 ### Reference paper
 
@@ -321,8 +324,8 @@ Purschke, Christoph (2020): **Attitudes towards multilingualism in Luxembourg. A
 
 ```Python:
 name='spellux',
-version='0.1.4',
-published='first published in March 2020; last updated (0.1.4) in August 2020'
+version='0.1.6',
+published='first published in March 2020; last updated (0.1.6) in March 2026'
 description='Automatic text normalization for Luxembourgish',
 url='https://github.com/questoph/spellux',
 author='Christoph Purschke',
