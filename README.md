@@ -1,6 +1,6 @@
 ## spellux - Automatic text normalization for Luxembourgish
 
-**Spellux** is a package made for the automatic correction of Luxembourgish texts. The package is written in **Python 3 (3.6 or higher)**. The current build is a working development prototype, not a fully-fledged orthographic normalizer. The same holds true for correction accuracy: follow-up versions will bring an improved pretrained correction dictionary as well as additional algorithms for candidate evaluation. The resources in spellux are tailored to Luxembourgish, the architecture or code snippets, however, might still be useful for other small languages. So everyone feel free to test, contribute, modify.
+**Spellux** is a package made for the automatic correction of Luxembourgish texts. The package is written in **Python 3 (3.9 or higher)**. The current build is a working development prototype, not a fully-fledged orthographic normalizer. The same holds true for correction accuracy: follow-up versions will bring an improved pretrained correction dictionary as well as additional algorithms for candidate evaluation. The resources in spellux are tailored to Luxembourgish, the architecture or code snippets, however, might still be useful for other small languages. So everyone feel free to test, contribute, modify.
 
 In its current state, the package is a bit resource-heavy and not very fast, especially when you use it for larger chunks of text with a lot of words not yet recorded in the pretrained dictionary or lemma list. This will change with following releases and a better correction dictionary. For now, the package will be used mainly for testing, evaluation, and development, as it does return a number of wrong corrections. This is mainly due to the large amount of orthographic variation in Luxembourgish.
 
@@ -313,11 +313,15 @@ Planned directions for improving correction accuracy include:
 
 For technical improvements and code quality changes, see the [changelog](changelog.md).
 
-### Reference paper
+### Reference papers
 
-For a detailed description of logic behind the *spellux* package and a first application see the following reference paper:
+For a detailed description of logic behind the *spellux* package and a first application see:
 
-Purschke, Christoph (2020): **Attitudes towards multilingualism in Luxembourg. A comparative analysis of online news comments and crowdsourced questionnaire data.** *Frontiers in Artificial Intelligence* 3:536086. doi: [https://doi.org/10.3389/frai.2020.536086](10.3389/frai.2020.536086).
+Purschke, Christoph (2020): **Attitudes towards multilingualism in Luxembourg. A comparative analysis of online news comments and crowdsourced questionnaire data.** *Frontiers in Artificial Intelligence* 3:536086. DOI: [10.3389/frai.2020.536086](https://doi.org/10.3389/frai.2020.536086).
+
+For an a fine-grained, linguistically-motivated evaluation of byte-based, word-based and pipeline-based models for text normalization , including *spellux*, see: 
+
+Lutgen, Anne-Marie Lutgen, Alistair Plum, Christoph Purschke and Barbara Plank (2025): **Neural Text Normalization for Luxembourgish Using Real-Life Variation Data.** Proceedings of the 12th Workshop on NLP for Similar Languages, Varieties and Dialects (VarDial), Abu Dhabi, UAE, 115–127. Link: [aclanthology.org/2025.vardial-1.9/](https://aclanthology.org/2025.vardial-1.9/)
 
 
 ### Package info
