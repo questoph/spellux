@@ -88,9 +88,9 @@ with open(ns_filepath, encoding="utf-8") as f:
 
 ## Train Tfidf matrix based on ngrams of words in lemma list
 ### Function to produce ngrams for words in list
-def ngrams(string, n=2):
-    string = re.sub(r'[,-./]|\sBD',r'', string)
-    ngrams = zip(*[string[i:] for i in range(n)])
+def ngrams(word, n=2):
+    word = re.sub(r'[,-./]|\sBD',r'', word)
+    ngrams = zip(*[word[i:] for i in range(n)])
     return [''.join(ngram) for ngram in ngrams]
 
 print("- building TF-IDF matrix")
@@ -139,6 +139,8 @@ def global_stats(corpus, totals=totals, reset=False, stopwords=False, report=Fal
         texts = len(corpus)
     elif isinstance(corpus, str):
         texts = 1
+    else:
+        texts = 0
     if reset:
         totals["words"], totals["corrections"], totals["misses"], totals["stopwords"] = 0, 0, 0, 0
         print("Global stats have been set to zero!")
@@ -196,7 +198,8 @@ def eval_lem_cand(word, lemmalist, sim_ratio):
 
 ## Function to evaluate candiatate based on combination of other methods
 def eval_combo_cand(word, lemmalist, lemmaset, sim_ratio):
-    train_cands = [eval_emb_cand(word, lemma_set, sim_ratio), correct_text(word, sim_ratio), eval_lem_cand(word, lemmalist, sim_ratio)]
+    from .norvig_corrector import correct_text as _norvig_correct
+    train_cands = [eval_emb_cand(word, lemmaset, sim_ratio), _norvig_correct(word, sim_ratio), eval_lem_cand(word, lemmalist, sim_ratio)]
     counts = Counter(train_cands)
     maxval = max(counts.values())
     if maxval >= 2:
@@ -332,7 +335,9 @@ def correct_nrule(text, indexing):
 
 ## Function to reduce word forms to their lemma
 ### Based on the inflection form dictionary
-def lemmatize_text(text, lemdict=lemdict, indexing=False, sim_ratio=0.8):
+def lemmatize_text(text, lemdict=None, indexing=False, sim_ratio=0.8):
+    if lemdict is None:
+        lemdict = globals()["lemdict"]
     correct_text = []
     # start correction routine
     for word in text:
@@ -375,7 +380,7 @@ def update_matchdict(matchdict, reset):
         if not reset:
             for key in matchdict.keys():
                 out.write("{},{}\n" .format(key, matchdict[key]))
-        elif reset:
+        else:
             matchdict = ""
             out.write(matchdict)
 

@@ -1,5 +1,12 @@
 ## Changelog
 
+### v0.1.9 [21.03.2026]
+
+- Fix mutable default argument `lemdict=lemdict` in `lemmatize_text`
+- Fix redundant `elif reset` → `else` in `update_matchdict`
+- Fix parameter name `string` in `ngrams` shadowing the `string` stdlib module
+- Fix latent `NameError` in `global_stats` when corpus is neither list nor string
+
 ### v0.1.8 [21.03.2026]
 
 - Defer loading of Norvig corpus (58 MB) until `mode="norvig"` is first used
