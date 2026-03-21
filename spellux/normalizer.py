@@ -29,8 +29,6 @@ _ALPHA = "a-zA-Z-ëäöüéêèûîâÄÖÜËÉ"
 _WORD_RE = re.compile(rf"^[{_ALPHA}]([{_ALPHA}'`'-])*[{_ALPHA}]?$")
 _MAX_UNKNOWN_CACHE = 50_000
 
-from .norvig_corrector import correct_text
-
 # Import correction resources
 print("Preparing spellux resources:")
 ## Matching dict (variant:lemma) trained from comment data from RTL.lu
@@ -47,7 +45,8 @@ with open(matchdict_filepath, "r", encoding="utf-8") as match_file:
 print("- importing lemma list")
 lemlist_relpath = "lemma_list_spellchecker.txt"
 lemlist_filepath = os.path.join(thedir, data_dir, lemlist_relpath)
-lemma_set = set(line.strip() for line in open(lemlist_filepath, encoding="utf-8"))
+with open(lemlist_filepath, encoding="utf-8") as f:
+    lemma_set = set(line.strip() for line in f)
 lemma_list = list(lemma_set)
 
 ## Lemma dictionary with variants for lemmatization
@@ -64,7 +63,8 @@ with open(lemdict_filepath, "r", encoding="utf-8") as lem_file:
 print("- importing stopwords")
 stop_relpath = "stopwords.txt"
 stop_filepath = os.path.join(thedir, data_dir, stop_relpath)
-stop_words = set(line.strip() for line in open(stop_filepath, encoding="utf-8"))
+with open(stop_filepath, encoding="utf-8") as f:
+    stop_words = set(line.strip() for line in f)
 
 ## Word embedding model based on text data (articles, comments) from RTL.lu
 print("- importing word embedding model")
@@ -77,12 +77,14 @@ print("- importing n-rule exception lists")
 ### List of words ending in nn to whom the n-rule applies
 nns_relpath = "nn_replace_list.txt"
 nns_filepath = os.path.join(thedir, data_dir, nns_relpath)
-nn_replace_list = set(line.strip() for line in open(nns_filepath, encoding="utf-8"))
+with open(nns_filepath, encoding="utf-8") as f:
+    nn_replace_list = set(line.strip() for line in f)
 
 ### List of words ending in n to whom the n-rule does not apply
 ns_relpath = "n_replace_list.txt"
 ns_filepath = os.path.join(thedir, data_dir, ns_relpath)
-n_replace_list = set(line.strip() for line in open(ns_filepath, encoding="utf-8"))
+with open(ns_filepath, encoding="utf-8") as f:
+    n_replace_list = set(line.strip() for line in f)
 
 ## Train Tfidf matrix based on ngrams of words in lemma list
 ### Function to produce ngrams for words in list
@@ -525,8 +527,9 @@ def normalize_text(text, matchdict=match_dict, exceptions=None, mode="safe", sim
                     # Evaluate correction candidate using word embedding model
                     deamb = eval_emb_cand(word, lemma_set, sim_ratio)
                 elif mode == "norvig":
-                    # Evaluate correction candidate using norvig corrector
-                    deamb = correct_text(word, sim_ratio)
+                    # Lazy import: load 58 MB corpus only when norvig mode is first used
+                    from .norvig_corrector import correct_text as _norvig_correct
+                    deamb = _norvig_correct(word, sim_ratio)
                 elif mode == "tf-idf":
                     # Evaluate correction candidate using learned tf-idf matrix
                     deamb = eval_lem_cand(word, lemma_list, sim_ratio)

@@ -1,5 +1,12 @@
 ## Changelog
 
+### v0.1.8 [21.03.2026]
+
+- Defer loading of Norvig corpus (58 MB) until `mode="norvig"` is first used
+- Fix unclosed file handles in normalizer (lemma list, stopwords, n-rule lists now use `with` blocks)
+- Remove Python 2 legacy `from __future__ import division` from norvig_corrector
+- Fix redundant `isinstance(cands, str) == True` → `isinstance(cands, str)` in norvig_corrector
+
 ### v0.1.7 [16.03.2026]
 
 - Raise minimum dependency versions to reflect tested-compatible releases

@@ -8,7 +8,6 @@
 #Copyright (c) 2007-2016 Peter Norvig
 #MIT license: www.opensource.org/licenses/mit-license.php
 
-from __future__ import division
 import os
 import re
 import string
@@ -22,7 +21,7 @@ _WORD_RE = re.compile("[a-zA-Z-ëäöüéêèûîâÄÖÜËÉ'`'-]+")
 
 # Additional function to evaluate the best similiarity match using jellyfish
 def get_best_match(word, cands):
-    if isinstance(cands, str) == True:
+    if isinstance(cands, str):
         cands = [cands]
     best_match = None
     highest_sim = 0
