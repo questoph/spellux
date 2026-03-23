@@ -319,7 +319,7 @@ For a detailed description of logic behind the *spellux* package and a first app
 
 Purschke, Christoph (2020): **Attitudes towards multilingualism in Luxembourg. A comparative analysis of online news comments and crowdsourced questionnaire data.** *Frontiers in Artificial Intelligence* 3:536086. DOI: [10.3389/frai.2020.536086](https://doi.org/10.3389/frai.2020.536086).
 
-For an a fine-grained, linguistically-motivated evaluation of byte-based, word-based and pipeline-based models for text normalization , including *spellux*, see: 
+For an a fine-grained, linguistically-motivated evaluation of byte-based, word-based and pipeline-based models for text normalization, including *spellux*, see: 
 
 Lutgen, Anne-Marie Lutgen, Alistair Plum, Christoph Purschke and Barbara Plank (2025): **Neural Text Normalization for Luxembourgish Using Real-Life Variation Data.** Proceedings of the 12th Workshop on NLP for Similar Languages, Varieties and Dialects (VarDial), Abu Dhabi, UAE, 115–127. Link: [aclanthology.org/2025.vardial-1.9/](https://aclanthology.org/2025.vardial-1.9/)
 
@@ -328,8 +328,8 @@ Lutgen, Anne-Marie Lutgen, Alistair Plum, Christoph Purschke and Barbara Plank (
 
 ```Python:
 name='spellux',
-version='0.1.7',
-published='first published in March 2020; last updated (0.1.7) in March 2026'
+version='0.1.9',
+published='first published in March 2020; last updated (0.1.9) in March 2026'
 description='Automatic text normalization for Luxembourgish',
 url='https://github.com/questoph/spellux',
 author='Christoph Purschke',
