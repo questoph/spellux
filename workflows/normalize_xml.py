@@ -14,7 +14,7 @@ thedir = os.path.dirname(__file__)
 parser = argparse.ArgumentParser('Auto-normalize xml files')
 parser.add_argument("--indir", type=str, default=thedir, help='Specify the path to the directory')
 parser.add_argument("--tag", type=str, default='w', help='Specify the xml tag to process (default= "w")')
-parser.add_argument("--outdir", type=str, help='Specify the path to the saving directory')
+parser.add_argument("--outdir", type=str, required=True, help='Specify the path to the saving directory')
 args = parser.parse_args()
 
 # Set list of files for normalization
@@ -35,13 +35,20 @@ for file in files:
     # Normalize each entry on word level
     for entry in pbar(root.findall('.//' + args.tag)).start():
         text = entry.text
+        # Skip empty elements (entry.text is None for <w/> tags)
+        if text is None or text.strip() == "":
+            continue
         corrected = spellux.normalize_text(text, mode="model", add_matches=True, sim_ratio=0.8, stats=False, print_unknown=False, nrule=False, indexing=False, lemmatize=True, stopwords=False, output="json", progress=False)
+        # doc_text is empty if the entry held no correctable token
+        if not corrected:
+            continue
         entry.set("corr", corrected[0]["correction"])
         entry.set("lemma", corrected[0]["lemma"])
 
-    name = file[4:-4] + "_normalized"
-    suff = file[-4:]
-    tree.write(args.outdir + name + suff)
+    # Build the output path from the base filename, independent of input path depth
+    base, suff = os.path.splitext(os.path.basename(file))
+    outpath = os.path.join(args.outdir, base + "_normalized" + suff)
+    tree.write(outpath)
     print("File done!\n")
 
 print("All files corrected!")

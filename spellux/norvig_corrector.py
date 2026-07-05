@@ -36,7 +36,8 @@ def words(text): return _WORD_RE.findall(text)
 
 text_relpath = "rtl_news_articles_clean_puretext3.txt"
 text_filepath = os.path.join(thedir, data_dir, text_relpath)
-WORDS = Counter(words(open(text_filepath, encoding="utf-8").read()))
+with open(text_filepath, encoding="utf-8") as text_file:
+    WORDS = Counter(words(text_file.read()))
 
 def P(word, N=sum(WORDS.values())):
     #Probability of word.

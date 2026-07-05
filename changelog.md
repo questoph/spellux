@@ -1,5 +1,13 @@
 ## Changelog
 
+### v0.2.0 [05.07.2026]
+
+- Fix `mode="model"` to check against the word component of the tuple upon lookup
+- Fix `mode="tf-idf"` to extract the scalar explicitly under numpy 2.x 
+- Fix latent `NameError` in `eval_lem_cand` when passed a list
+- Write the unknown-words file relative to the working directory at call time instead of at import time
+- Close the Norvig corpus file handle via a context manager on load
+
 ### v0.1.9 [21.03.2026]
 
 - Fix mutable default argument `lemdict=lemdict` in `lemmatize_text`

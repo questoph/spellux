@@ -327,8 +327,8 @@ Lutgen, Anne-Marie Lutgen, Alistair Plum, Christoph Purschke and Barbara Plank (
 
 ```Python:
 name='spellux',
-version='0.1.9',
-published='first published in March 2020; last updated (0.1.9) in March 2026'
+version='0.2.0',
+published='first published in March 2020; last updated (0.2.0) in July 2026'
 description='Automatic text normalization for Luxembourgish',
 url='https://github.com/questoph/spellux',
 author='Christoph Purschke',

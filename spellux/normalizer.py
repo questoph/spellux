@@ -125,9 +125,7 @@ except Exception:
 
 # Define list to collect unknown words
 not_in_dict = set()
-savedir = os.getcwd()
 unknown_relpath = "unknown_words.txt"
-unknown_filepath = os.path.join(savedir, unknown_relpath)
 
 print("\nAll set. Let's go!")
 
@@ -168,7 +166,8 @@ def _eval_emb_cached(word, sim_ratio):
     try:
         sim_cands = model.wv.most_similar(positive=word, topn=10)
         for cand in sim_cands:
-            if cand in lemma_set:
+            # most_similar returns (word, score) tuples; test the word only
+            if cand[0] in lemma_set:
                 emb_cands.add(cand[0])
         fuzz_cand = get_best_match(word, emb_cands)
         emb_cand = fuzz_cand[0]
@@ -186,9 +185,12 @@ def eval_emb_cand(word, lemmaset, sim_ratio):
 def eval_lem_cand(word, lemmalist, sim_ratio):
     if not isinstance(word, list):
         word_ = [word]
+    else:
+        word_ = word
     queryTFIDF_ = vectorizer.transform(word_)
     list_index = nbrs.kneighbors(queryTFIDF_)
-    lem_cand = "".join(lemmalist[int(list_index[1])])
+    # kneighbors returns a (1, 1) index array; extract the scalar explicitly
+    lem_cand = "".join(lemmalist[int(list_index[1][0][0])])
     eval_cand = get_best_match(word, lem_cand)
     if eval_cand[1] >= sim_ratio:
         return lem_cand
@@ -386,6 +388,9 @@ def update_matchdict(matchdict, reset):
 
 ## Function to save unknown words to file
 def save_unknown(notindict):
+    # Resolve the output path against the current working directory at call
+    # time (not at import time) so the file lands where the caller expects
+    unknown_filepath = os.path.join(os.getcwd(), unknown_relpath)
     with open(unknown_filepath, 'w', encoding="utf-8") as out:
         for item in notindict:
             out.write("{}\n" .format(item))
